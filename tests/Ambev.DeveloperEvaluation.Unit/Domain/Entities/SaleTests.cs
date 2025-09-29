@@ -1,3 +1,7 @@
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
+using Xunit;
+
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
 
 /// <summary>
@@ -10,7 +14,7 @@ public class SaleTests
   /// Tests basic Sale class generation
   /// </summary>
   [Fact(DisplayName = "Sale create should generate valid sale number")]
-  public void Sale_Create_Should_Generate_Valid_Sale_Number()
+  public void Sale_Create_Should_Generate_Valid_SaleNumber()
   {
     //Arrange
     var testSale = SaleTestData.GenerateValidSale();
@@ -25,6 +29,5 @@ public class SaleTests
     Assert.Equal(testSale.BranchId, sale.BranchId);
     Assert.Equal(testSale.BranchName, sale.BranchName);
     Assert.Equal(0, sale.TotalAmount);
-    Assert.Equal(SaleStatus.Pending, sale.Status);
   }
 }

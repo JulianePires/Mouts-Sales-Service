@@ -1,3 +1,6 @@
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Bogus;
+
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 
 /// <summary>
@@ -5,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 /// This class centralizes all test data generation to ensure consistency
 /// across test cases and provide both valid and invalid data scenarios.
 /// </summary>
-public class SaleTestData
+public static class SaleTestData
 {
     /// <summary>
     /// Configures the Faker to generate valid User entities.

@@ -24,26 +24,44 @@ public interface ISale
     public DateTime SaleDate { get; }
     
     /// <summary>
-    /// Gets the data of the customer.
+    /// Gets the customer data.
     /// </summary>
-    /// <returns>The customer data.</returns>
+    /// <returns>The customer information.</returns>
     public ICustomer Customer { get; }
     
     /// <summary>
-    /// Gets the data for the branch where the sale was made.
+    /// Gets the data of the branch where the sale was made.
     /// </summary>
-    /// <returns>The branch data.</returns>
+    /// <returns>The branch information.</returns>
     public IBranch Branch { get; }
     
     /// <summary>
     /// Gets the list of items included in the sale.
     /// </summary>
-    /// <returns>A list of sale items.</returns>
-    public IList<ISaleItem> Items { get; }
+    /// <returns>A readonly collection of sale items.</returns>
+    public IReadOnlyCollection<ISaleItem> Items { get; }
     
     /// <summary>
     /// Gets the total amount for the sale.
     /// </summary>
-    /// <returns>The total amount as decimal.</returns>
+    /// <returns>The total sale amount.</returns>
     public decimal TotalAmount { get; }
+    
+    /// <summary>
+    /// Gets the cancellation status of the sale.
+    /// </summary>
+    /// <returns>True if the sale is cancelled; otherwise, false.</returns>
+    public bool IsCancelled { get; }
+    
+    /// <summary>
+    /// Gets the date when the sale was created.
+    /// </summary>
+    /// <returns>The sale creation date.</returns>
+    public DateTime CreatedAt { get; }
+    
+    /// <summary>
+    /// Gets the date of the last update to the sale.
+    /// </summary>
+    /// <returns>The last update date, if any.</returns>
+    public DateTime? UpdatedAt { get; }
 }

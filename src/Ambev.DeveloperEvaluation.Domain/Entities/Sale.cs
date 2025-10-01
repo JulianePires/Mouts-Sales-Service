@@ -197,7 +197,6 @@ public class Sale : BaseEntity, ISale
 
         var saleItem = SaleItem.Create(Id, product, quantity, unitPrice);
         Items.Add(saleItem);
-
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
     }

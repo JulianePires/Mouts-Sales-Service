@@ -95,7 +95,6 @@ public class SaleItemTests
         // Arrange
         var saleItem = SaleItemTestData.GenerateSaleItemWithNoDiscount();
         saleItem.Quantity = quantity;
-
         // Force recalculation
         saleItem.UpdateQuantity(quantity);
 

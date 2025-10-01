@@ -311,7 +311,11 @@ public class ProductTests
 
         // Assert
         result.IsValid.Should().BeFalse();
+<<<<<<< HEAD
         result.Errors.Should().Contain(e => e.Detail.Contains("name"));
+=======
+        result.Errors.Should().Contain(e => e.Error == nameof(Product.Name));
+>>>>>>> e30f9b5 (Feat(domain): complete domain entities implementation (#1))
     }
 
     /// <summary>
@@ -328,7 +332,11 @@ public class ProductTests
 
         // Assert
         result.IsValid.Should().BeFalse();
+<<<<<<< HEAD
         result.Errors.Should().Contain(e => e.Detail.Contains("price"));
+=======
+        result.Errors.Should().Contain(e => e.Error == nameof(Product.Price));
+>>>>>>> e30f9b5 (Feat(domain): complete domain entities implementation (#1))
     }
 
     /// <summary>

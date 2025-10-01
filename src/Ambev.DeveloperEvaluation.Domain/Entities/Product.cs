@@ -216,6 +216,30 @@ public class Product : BaseEntity, IProduct
     }
 
     /// <summary>
+    /// Updates the product information.
+    /// </summary>
+    /// <param name="name">The new product name.</param>
+    /// <param name="description">The new product description.</param>
+    /// <param name="category">The new product category.</param>
+    /// <param name="image">The new product image URL.</param>
+    public void UpdateInfo(string? name = null, string? description = null, string? category = null, string? image = null)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+            Name = name.Trim();
+
+        if (description != null)
+            Description = description.Trim();
+
+        if (!string.IsNullOrWhiteSpace(category))
+            Category = category.Trim();
+
+        if (image != null)
+            Image = image.Trim();
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
     /// Adds stock to the product inventory.
     /// </summary>
     /// <param name="quantity">The quantity to add to stock.</param>

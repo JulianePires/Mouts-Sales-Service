@@ -5,23 +5,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 /// <summary>
 /// Repository interface for Product entity operations
 /// </summary>
-public interface IProductRepository
+public interface IProductRepository : IBaseRepository<Product>
 {
-    /// <summary>
-    /// Creates a new product in the repository
-    /// </summary>
-    /// <param name="product">The product to create</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created product</returns>
-    Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves a product by its unique identifier
-    /// </summary>
-    /// <param name="id">The unique identifier of the product</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The product if found, null otherwise</returns>
-    Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a product by its name
@@ -98,43 +83,4 @@ public interface IProductRepository
     /// <returns>True if stock was reduced, false if insufficient stock or product not found</returns>
     Task<bool> ReduceStockAsync(Guid id, int quantity, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Updates an existing product
-    /// </summary>
-    /// <param name="product">The product to update</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The updated product</returns>
-    Task<Product> UpdateAsync(Product product, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Deletes a product by its unique identifier
-    /// </summary>
-    /// <param name="id">The unique identifier of the product to delete</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the product was deleted, false if not found</returns>
-    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Checks if a product exists by ID
-    /// </summary>
-    /// <param name="id">The unique identifier of the product</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the product exists, false otherwise</returns>
-    Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets the total count of products
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Total number of products</returns>
-    Task<int> GetCountAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets paginated products
-    /// </summary>
-    /// <param name="pageNumber">Page number (1-based)</param>
-    /// <param name="pageSize">Number of items per page</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Paginated list of products</returns>
-    Task<IEnumerable<Product>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
 }

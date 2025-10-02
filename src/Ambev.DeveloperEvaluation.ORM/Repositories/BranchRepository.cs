@@ -7,17 +7,15 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 /// <summary>
 /// Implementation of IBranchRepository using Entity Framework Core
 /// </summary>
-public class BranchRepository : IBranchRepository
+public class BranchRepository : BaseRepository<Branch>, IBranchRepository
 {
-    private readonly DefaultContext _context;
 
     /// <summary>
     /// Initializes a new instance of BranchRepository
     /// </summary>
     /// <param name="context">The database context</param>
-    public BranchRepository(DefaultContext context)
+    public BranchRepository(DefaultContext context) : base(context)
     {
-        _context = context;
     }
 
     /// <summary>
@@ -29,7 +27,7 @@ public class BranchRepository : IBranchRepository
     public async Task<Branch> CreateAsync(Branch branch, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(branch);
-        _context.Branches.Add(branch);
+        _dbSet.Add(branch);
         await _context.SaveChangesAsync(cancellationToken);
         return branch;
     }
@@ -42,7 +40,7 @@ public class BranchRepository : IBranchRepository
     /// <returns>The branch if found, null otherwise</returns>
     public async Task<Branch?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Branches
+        return await _dbSet
             .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
     }
 
@@ -57,7 +55,7 @@ public class BranchRepository : IBranchRepository
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Branch name cannot be null or empty.", nameof(name));
 
-        return await _context.Branches
+        return await _dbSet
             .FirstOrDefaultAsync(b => b.Name == name, cancellationToken);
     }
 
@@ -72,7 +70,7 @@ public class BranchRepository : IBranchRepository
         if (string.IsNullOrWhiteSpace(address))
             return Enumerable.Empty<Branch>();
 
-        return await _context.Branches
+        return await _dbSet
             .Where(b => b.Address.Contains(address))
             .OrderBy(b => b.Name)
             .ToListAsync(cancellationToken);
@@ -89,7 +87,7 @@ public class BranchRepository : IBranchRepository
         if (string.IsNullOrWhiteSpace(manager))
             throw new ArgumentException("Manager name cannot be null or empty.", nameof(manager));
 
-        return await _context.Branches
+        return await _dbSet
             .Where(b => b.Manager == manager)
             .OrderBy(b => b.Name)
             .ToListAsync(cancellationToken);
@@ -102,7 +100,7 @@ public class BranchRepository : IBranchRepository
     /// <returns>List of active branches</returns>
     public async Task<IEnumerable<Branch>> GetActiveAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Branches
+        return await _dbSet
             .Where(b => b.IsActive)
             .OrderBy(b => b.Name)
             .ToListAsync(cancellationToken);
@@ -119,7 +117,7 @@ public class BranchRepository : IBranchRepository
         if (string.IsNullOrWhiteSpace(name))
             return Enumerable.Empty<Branch>();
 
-        return await _context.Branches
+        return await _dbSet
             .Where(b => b.Name.Contains(name))
             .OrderBy(b => b.Name)
             .ToListAsync(cancellationToken);
@@ -147,7 +145,7 @@ public class BranchRepository : IBranchRepository
     /// <returns>The updated branch</returns>
     public async Task<Branch> UpdateAsync(Branch branch, CancellationToken cancellationToken = default)
     {
-        _context.Branches.Update(branch);
+        _dbSet.Update(branch);
         await _context.SaveChangesAsync(cancellationToken);
         return branch;
     }
@@ -164,7 +162,7 @@ public class BranchRepository : IBranchRepository
         if (branch == null)
             return false;
 
-        _context.Branches.Remove(branch);
+        _dbSet.Remove(branch);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -177,7 +175,7 @@ public class BranchRepository : IBranchRepository
     /// <returns>True if the branch exists, false otherwise</returns>
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Branches
+        return await _dbSet
             .AnyAsync(b => b.Id == id, cancellationToken);
     }
 
@@ -188,7 +186,7 @@ public class BranchRepository : IBranchRepository
     /// <returns>Total number of branches</returns>
     public async Task<int> GetCountAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Branches.CountAsync(cancellationToken);
+        return await _dbSet.CountAsync(cancellationToken);
     }
 
     /// <summary>
@@ -205,7 +203,7 @@ public class BranchRepository : IBranchRepository
         if (pageSize <= 0)
             throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
 
-        return await _context.Branches
+        return await _dbSet
             .OrderBy(b => b.Name)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

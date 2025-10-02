@@ -210,6 +210,9 @@ public class CustomerRepositoryTests : IDisposable
         customer2.Name = "Middle Customer";
         var customer3 = CustomerTestData.GenerateValidCustomer();
         customer3.Name = "Old Customer";
+        customer1.BirthDate = DateTime.Now.AddYears(-20); // Age 20
+        customer2.BirthDate = DateTime.Now.AddYears(-35); // Age 30
+        customer3.BirthDate = DateTime.Now.AddYears(-60); // Age 60
 
         await _repository.CreateAsync(customer1);
         await _repository.CreateAsync(customer2);

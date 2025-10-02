@@ -155,7 +155,7 @@ public class Sale : BaseEntity, ISale
     /// <param name="saleDate">Optional sale date (current date if null).</param>
     /// <returns>A new Sale instance.</returns>
     /// <exception cref="ArgumentException">Thrown when required parameters are null.</exception>
-    public static Sale Create(Customer customer, Branch branch, string? saleNumber = null, DateTime? saleDate = null)
+    public static Sale Create(Customer customer, Branch branch, string saleNumber, DateTime? saleDate = null)
     {
         if (customer == null)
             throw new ArgumentException("Customer cannot be null.", nameof(customer));
@@ -173,7 +173,7 @@ public class Sale : BaseEntity, ISale
         {
             Customer = customer,
             Branch = branch,
-            SaleNumber = saleNumber ?? GenerateSaleNumber(),
+            SaleNumber = saleNumber,
             SaleDate = saleDate ?? DateTime.UtcNow
         };
     }
@@ -348,17 +348,6 @@ public class Sale : BaseEntity, ISale
         TotalAmount = Items
             .Where(i => !i.IsCancelled)
             .Sum(i => i.TotalPrice);
-    }
-
-    /// <summary>
-    /// Generates a unique sale number with timestamp and random component.
-    /// </summary>
-    /// <returns>A unique sale number.</returns>
-    private static string GenerateSaleNumber()
-    {
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-        var random = new Random().Next(100, 999);
-        return $"SALE-{timestamp}-{random}";
     }
 
     /// <summary>

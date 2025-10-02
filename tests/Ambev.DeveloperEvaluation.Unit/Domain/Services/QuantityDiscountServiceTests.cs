@@ -75,6 +75,19 @@ public class QuantityDiscountServiceTests
         exception.Message.Should().Contain("Preço unitário deve ser maior que zero");
     }
 
+    [Fact(DisplayName = "Given price just below maximum When calculating discount Then should NOT throw exception")]
+    public void CalculateDiscount_PriceJustBelowMaximum_ShouldNotThrowException()
+    {
+        // Arrange
+        decimal maxPrice = BusinessConstants.MaximumUnitPrice;
+        decimal priceJustBelowMax = maxPrice - 0.01m;
+
+        // Act & Assert
+        var exception = Record.Exception(() => _discountService.CalculateDiscount(5, priceJustBelowMax));
+
+        exception.Should().BeNull("because price just below the maximum should be valid");
+    }
+
     [Fact(DisplayName = "Given price above limit When calculating discount Then should throw exception")]
     public void CalculateDiscount_PriceAboveLimit_ShouldThrowException()
     {

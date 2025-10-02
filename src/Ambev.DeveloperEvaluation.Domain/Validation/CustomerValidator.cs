@@ -21,14 +21,11 @@ public class CustomerValidator : AbstractValidator<Customer>
             .MaximumLength(100)
             .WithMessage("Customer name cannot be longer than 100 characters.");
 
-        RuleFor(customer => customer.Email)
-            .SetValidator(new EmailValidator())
-            .WithMessage("Customer email is required and must be valid.");
+        RuleFor(user => user.Email).SetValidator(new EmailValidator());
 
-        RuleFor(customer => customer.Phone)
-            .SetValidator(new PhoneValidator())
-            .When(customer => !string.IsNullOrWhiteSpace(customer.Phone))
-            .WithMessage("Invalid phone format for customer.");
+        RuleFor(user => user.Phone)
+            .Matches(@"^\+[1-9]\d{10,14}$")
+            .WithMessage("Phone number must start with '+' followed by 11-15 digits.");
 
         RuleFor(customer => customer.BirthDate)
             .LessThan(DateTime.Today)

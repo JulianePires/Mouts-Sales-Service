@@ -75,7 +75,6 @@ public class QuantityDiscountServiceTests
         exception.Message.Should().Contain("Preço unitário deve ser maior que zero");
     }
 
-<<<<<<< HEAD
     [Fact(DisplayName = "Given price just below maximum When calculating discount Then should NOT throw exception")]
     public void CalculateDiscount_PriceJustBelowMaximum_ShouldNotThrowException()
     {
@@ -89,8 +88,6 @@ public class QuantityDiscountServiceTests
         exception.Should().BeNull("because price just below the maximum should be valid");
     }
 
-=======
->>>>>>> 9de16d2 (Feat(discount): implement quantity-based discount service and related validation (#5))
     [Fact(DisplayName = "Given price above limit When calculating discount Then should throw exception")]
     public void CalculateDiscount_PriceAboveLimit_ShouldThrowException()
     {

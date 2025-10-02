@@ -5,11 +5,13 @@
 ### **🔧 Pré-requisitos**
 
 #### **Sistema Operacional**
+
 - **Linux**: Ubuntu 20.04+ / CentOS 8+ / RHEL 8+
 - **Windows**: Windows Server 2019+ / Windows 10+
 - **macOS**: macOS 10.15+ (apenas desenvolvimento)
 
 #### **Runtime Requirements**
+
 ```bash
 # .NET 8.0 Runtime
 dotnet --version  # Deve ser >= 8.0.0
@@ -25,6 +27,7 @@ psql --version  # 13.0+
 ### **🐳 Deploy com Docker**
 
 #### **1. Preparação do Ambiente**
+
 ```bash
 # Clone do repositório
 git clone <repository-url>
@@ -35,6 +38,7 @@ cp .env.example .env
 ```
 
 #### **2. Configuração do .env**
+
 ```env
 # Database
 DATABASE_CONNECTION_STRING=Host=postgres;Database=ambev_dev;Username=postgres;Password=postgres123
@@ -56,6 +60,7 @@ MONGODB_CONNECTION_STRING=mongodb://mongodb:27017/ambev
 ```
 
 #### **3. Build e Deploy**
+
 ```bash
 # Build da aplicação
 docker-compose build
@@ -71,6 +76,7 @@ docker-compose logs -f webapi
 ```
 
 #### **4. Health Check**
+
 ```bash
 # Verificar se a API está respondendo
 curl http://localhost:5000/health
@@ -82,6 +88,7 @@ open http://localhost:5000/swagger
 ### **🔄 Deploy Tradicional (sem Docker)**
 
 #### **1. Preparar Banco de Dados**
+
 ```sql
 -- Conectar no PostgreSQL
 CREATE DATABASE ambev_production;
@@ -90,6 +97,7 @@ GRANT ALL PRIVILEGES ON DATABASE ambev_production TO ambev_user;
 ```
 
 #### **2. Build da Aplicação**
+
 ```bash
 # Restore packages
 dotnet restore
@@ -103,6 +111,7 @@ dotnet ef database update --connection "Host=localhost;Database=ambev_production
 ```
 
 #### **3. Publicação**
+
 ```bash
 # Publish da aplicação
 dotnet publish -c Release -o ./publish
@@ -115,6 +124,7 @@ sudo nano /etc/systemd/system/ambev-api.service
 ```
 
 #### **4. Configuração do Systemd**
+
 ```ini
 [Unit]
 Description=Ambev Developer Evaluation API
@@ -145,6 +155,7 @@ sudo systemctl status ambev-api
 ### **🌐 Configuração do Nginx**
 
 #### **Reverse Proxy Setup**
+
 ```nginx
 server {
     listen 80;
@@ -166,6 +177,7 @@ server {
 ```
 
 #### **HTTPS com Let's Encrypt**
+
 ```bash
 # Instalar Certbot
 sudo apt install certbot python3-certbot-nginx
@@ -182,46 +194,48 @@ sudo crontab -e
 ### **☁️ Deploy na Nuvem**
 
 #### **Azure App Service**
+
 ```yaml
 # azure-pipelines.yml
 trigger:
   branches:
     include:
-    - main
+      - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: "Release"
 
 steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "restore"
+      projects: "**/*.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/*.csproj"
+      arguments: "--configuration $(buildConfiguration)"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    projects: 'src/Ambev.DeveloperEvaluation.WebApi/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "publish"
+      projects: "src/Ambev.DeveloperEvaluation.WebApi/*.csproj"
+      arguments: "--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)"
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Azure-Subscription'
-    appType: 'webAppLinux'
-    appName: 'ambev-api'
-    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: "Azure-Subscription"
+      appType: "webAppLinux"
+      appName: "ambev-api"
+      package: "$(Build.ArtifactStagingDirectory)/**/*.zip"
 ```
 
 #### **AWS ECS (Fargate)**
+
 ```dockerfile
 # Dockerfile.production
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
@@ -255,6 +269,7 @@ ENTRYPOINT ["dotnet", "Ambev.DeveloperEvaluation.WebApi.dll"]
 ### **📊 Monitoramento e Logs**
 
 #### **Application Insights (Azure)**
+
 ```csharp
 // Program.cs
 services.AddApplicationInsightsTelemetry();
@@ -268,9 +283,10 @@ services.AddApplicationInsightsTelemetry();
 ```
 
 #### **ELK Stack (Elasticsearch + Logstash + Kibana)**
+
 ```yaml
 # docker-compose.logging.yml
-version: '3.8'
+version: "3.8"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
@@ -300,6 +316,7 @@ services:
 ### **🔐 Segurança em Produção**
 
 #### **Configurações de Segurança**
+
 ```json
 // appsettings.Production.json
 {
@@ -326,6 +343,7 @@ services:
 ```
 
 #### **Firewall Rules**
+
 ```bash
 # UFW Configuration
 sudo ufw enable
@@ -338,6 +356,7 @@ sudo ufw deny 5000/tcp     # Block direct API access
 ### **📋 Checklist de Deploy**
 
 #### **Antes do Deploy**
+
 - [ ] Testes unitários passando (100%)
 - [ ] Testes de integração executados
 - [ ] Code review completo
@@ -347,6 +366,7 @@ sudo ufw deny 5000/tcp     # Block direct API access
 - [ ] Backup do banco de dados atual
 
 #### **Durante o Deploy**
+
 - [ ] Modo de manutenção ativado
 - [ ] Aplicação antiga parada
 - [ ] Migrações de banco executadas
@@ -355,6 +375,7 @@ sudo ufw deny 5000/tcp     # Block direct API access
 - [ ] Logs monitorados por 15min
 
 #### **Após o Deploy**
+
 - [ ] Smoke tests executados
 - [ ] Endpoints críticos testados
 - [ ] Modo de manutenção desativado
@@ -365,6 +386,7 @@ sudo ufw deny 5000/tcp     # Block direct API access
 ### **🔄 Estratégias de Rollback**
 
 #### **Rollback Rápido**
+
 ```bash
 # Docker
 docker-compose down
@@ -377,6 +399,7 @@ sudo systemctl start ambev-api
 ```
 
 #### **Blue-Green Deployment**
+
 ```yaml
 # docker-compose.blue-green.yml
 services:
@@ -384,12 +407,12 @@ services:
     build: .
     ports:
       - "5001:5000"
-    
+
   webapi-green:
     build: .
     ports:
       - "5002:5000"
-    
+
   nginx:
     image: nginx
     volumes:

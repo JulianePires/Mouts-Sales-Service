@@ -5,6 +5,7 @@
 ### **🛒 Sales (Vendas)**
 
 #### **Criação de Venda**
+
 - **Obrigatórios**: Cliente, Filial, pelo menos 1 item
 - **Validações**:
   - Cliente deve estar ativo
@@ -14,6 +15,7 @@
   - Produto deve estar ativo no catálogo
 
 #### **Cálculo de Descontos**
+
 - **Regra de Quantidade**: A partir de 4 unidades do mesmo produto
   - 4-9 unidades: 10% de desconto
   - 10-19 unidades: 20% de desconto
@@ -22,11 +24,13 @@
 - **Exceção**: Produtos em promoção não acumulam desconto por quantidade
 
 #### **Limite de Itens**
+
 - **Máximo**: 20 produtos diferentes por venda
 - **Validação**: Sistema deve impedir adição além do limite
 - **Comportamento**: Exibir mensagem clara ao usuário
 
 #### **Estados da Venda**
+
 ```csharp
 public enum SaleStatus
 {
@@ -39,6 +43,7 @@ public enum SaleStatus
 ### **👤 Customers (Clientes)**
 
 #### **Cadastro de Cliente**
+
 - **Campos Obrigatórios**:
   - Nome completo (mín. 3 caracteres)
   - Email (formato válido e único)
@@ -46,11 +51,13 @@ public enum SaleStatus
   - Telefone (formato brasileiro)
 
 #### **Validações de Documento**
+
 - **CPF**: Validação por dígitos verificadores
 - **CNPJ**: Validação por dígitos verificadores
 - **Unicidade**: Não permitir documentos duplicados
 
 #### **Status do Cliente**
+
 - **Active**: Cliente pode realizar compras
 - **Inactive**: Cliente bloqueado temporariamente
 - **Blocked**: Cliente bloqueado permanentemente
@@ -58,11 +65,13 @@ public enum SaleStatus
 ### **🏢 Branches (Filiais)**
 
 #### **Operação da Filial**
+
 - **Horário de Funcionamento**: 08:00 às 18:00
 - **Validação**: Vendas só podem ser registradas em horário comercial
 - **Exceção**: Administradores podem registrar fora do horário
 
 #### **Tipos de Filial**
+
 ```csharp
 public enum BranchType
 {
@@ -75,11 +84,13 @@ public enum BranchType
 ### **📦 Products (Produtos)**
 
 #### **Gerenciamento de Estoque**
+
 - **Controle**: Por filial e produto
 - **Validação**: Não permitir venda sem estoque suficiente
 - **Reserva**: Estoque é reservado na criação da venda
 
 #### **Categorias de Produto**
+
 ```csharp
 public enum ProductCategory
 {
@@ -91,6 +102,7 @@ public enum ProductCategory
 ```
 
 #### **Regras de Precificação**
+
 - **Preço Base**: Definido por produto
 - **Promoções**: Podem sobrescrever preço base
 - **Desconto Máximo**: 30% sobre preço original
@@ -98,6 +110,7 @@ public enum ProductCategory
 ### **🔐 Security & Authorization**
 
 #### **Níveis de Acesso**
+
 ```csharp
 public enum UserRole
 {
@@ -109,6 +122,7 @@ public enum UserRole
 ```
 
 #### **Políticas de Segurança**
+
 - **Senhas**: Mínimo 8 caracteres, maiúscula, minúscula, número
 - **JWT**: Expiração em 24 horas
 - **Refresh Token**: Válido por 30 dias
@@ -117,6 +131,7 @@ public enum UserRole
 ### **📊 Business Logic Examples**
 
 #### **Cálculo de Desconto por Quantidade**
+
 ```csharp
 public decimal CalculateQuantityDiscount(int quantity, decimal unitPrice)
 {
@@ -131,20 +146,22 @@ public decimal CalculateQuantityDiscount(int quantity, decimal unitPrice)
 ```
 
 #### **Validação de Horário Comercial**
+
 ```csharp
 public bool IsWithinBusinessHours(DateTime saleDate)
 {
     var time = saleDate.TimeOfDay;
-    return time >= TimeSpan.FromHours(8) && 
+    return time >= TimeSpan.FromHours(8) &&
            time <= TimeSpan.FromHours(18);
 }
 ```
 
 #### **Cálculo de Total da Venda**
+
 ```csharp
 public decimal CalculateTotalAmount(IEnumerable<SaleItem> items)
 {
-    return items.Sum(item => 
+    return items.Sum(item =>
     {
         var subtotal = item.Quantity * item.UnitPrice;
         var discount = CalculateQuantityDiscount(item.Quantity, item.UnitPrice);
@@ -156,6 +173,7 @@ public decimal CalculateTotalAmount(IEnumerable<SaleItem> items)
 ### **🔄 Business Workflows**
 
 #### **Fluxo de Criação de Venda**
+
 1. **Validar Cliente**: Verificar se está ativo
 2. **Validar Filial**: Confirmar operação
 3. **Validar Produtos**: Verificar disponibilidade
@@ -166,6 +184,7 @@ public decimal CalculateTotalAmount(IEnumerable<SaleItem> items)
 8. **Disparar Evento**: SaleCreated para notificações
 
 #### **Fluxo de Cancelamento**
+
 1. **Validar Permissão**: Verificar autorização
 2. **Verificar Status**: Apenas vendas confirmadas
 3. **Reverter Estoque**: Devolver quantidades
@@ -175,23 +194,25 @@ public decimal CalculateTotalAmount(IEnumerable<SaleItem> items)
 ### **⚠️ Exception Handling**
 
 #### **Exceções de Negócio**
+
 ```csharp
 public class BusinessException : Exception
 {
     public string ErrorCode { get; }
-    public BusinessException(string code, string message) 
+    public BusinessException(string code, string message)
         : base(message) => ErrorCode = code;
 }
 
 // Exemplos de uso:
-throw new BusinessException("MAX_QUANTITY_EXCEEDED", 
+throw new BusinessException("MAX_QUANTITY_EXCEEDED",
     "Quantidade máxima de 20 unidades excedida");
 
-throw new BusinessException("CUSTOMER_INACTIVE", 
+throw new BusinessException("CUSTOMER_INACTIVE",
     "Cliente inativo não pode realizar compras");
 ```
 
 #### **Códigos de Erro Padronizados**
+
 - `CUSTOMER_INACTIVE`: Cliente inativo
 - `BRANCH_CLOSED`: Filial fechada
 - `INSUFFICIENT_STOCK`: Estoque insuficiente

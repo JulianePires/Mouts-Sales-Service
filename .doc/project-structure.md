@@ -44,6 +44,7 @@
 ```
 
 **Responsabilidades**:
+
 - Regras de negócio e lógica de domínio
 - Entidades com comportamentos ricos
 - Contratos (interfaces) para serviços
@@ -68,6 +69,7 @@
 ```
 
 **Responsabilidades**:
+
 - Orquestração de casos de uso
 - Coordenação entre domínio e infraestrutura
 - Transformação de dados (DTOs)
@@ -91,6 +93,7 @@
 ```
 
 **Responsabilidades**:
+
 - Endpoints da API REST
 - Serialização/deserialização JSON
 - Autenticação e autorização
@@ -116,6 +119,7 @@
 ```
 
 **Responsabilidades**:
+
 - Acesso a dados com Entity Framework
 - Configurações de mapeamento
 - Migrações de banco de dados
@@ -133,6 +137,7 @@
 ```
 
 **Responsabilidades**:
+
 - Configuração de injeção de dependência
 - Registro de serviços por módulo
 - Configuração de lifetime dos objetos
@@ -152,6 +157,7 @@
 ```
 
 **Responsabilidades**:
+
 - Utilitários compartilhados
 - Funcionalidades transversais
 - Extensões e helpers
@@ -171,6 +177,7 @@
 ```
 
 **Responsabilidades**:
+
 - Verificação de comportamento
 - Garantia de qualidade
 - Documentação viva do código
@@ -188,6 +195,7 @@
 ```
 
 **Responsabilidades**:
+
 - Documentação técnica
 - Guias de uso e configuração
 - Decisões arquiteturais

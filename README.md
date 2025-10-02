@@ -55,11 +55,11 @@ O projeto segue **Clean Architecture** com separação clara de responsabilidade
 ```mermaid
 graph TB
     Sale[🛒 Venda]
-    Customer[👤 Cliente] 
+    Customer[👤 Cliente]
     Branch[🏢 Filial]
     Product[📦 Produto]
     SaleItem[📋 Item de Venda]
-    
+
     Sale --> Customer
     Sale --> Branch
     Sale --> SaleItem
@@ -67,6 +67,7 @@ graph TB
 ```
 
 #### 🛒 **Sale** (Venda)
+
 - Número único da venda
 - Data da transação
 - Valor total com descontos
@@ -74,6 +75,7 @@ graph TB
 - Relacionamentos com cliente e filial
 
 #### 📋 **SaleItem** (Item de Venda)
+
 - Quantidade do produto
 - Preço unitário no momento da venda
 - Desconto aplicado automaticamente:
@@ -82,18 +84,21 @@ graph TB
 - Preço total calculado
 
 #### 👤 **Customer** (Cliente)
+
 - Dados pessoais completos
 - Informações de contato
 - Data de nascimento
 - Endereço
 
 #### 🏢 **Branch** (Filial)
+
 - Nome e localização
 - Dados de contato
 - Gerente responsável
 - Status ativo/inativo
 
 #### 📦 **Product** (Produto)
+
 - Informações básicas do produto
 - Controle de estoque
 - Preços e categoria
@@ -102,6 +107,7 @@ graph TB
 ## 🛠️ Tecnologias
 
 ### Backend
+
 - **.NET 8**: Framework principal
 - **Entity Framework Core**: ORM para PostgreSQL
 - **PostgreSQL**: Banco de dados principal
@@ -110,6 +116,7 @@ graph TB
 - **JWT**: Autenticação e autorização
 
 ### Infraestrutura
+
 - **Docker & Docker Compose**: Containerização
 - **Podman**: Runtime de containers alternativo
 - **MongoDB**: Armazenamento NoSQL
@@ -117,6 +124,7 @@ graph TB
 - **Swagger/OpenAPI**: Documentação da API
 
 ### Testes
+
 - **xUnit**: Framework de testes
 - **FluentAssertions**: Assertions expressivas
 - **InMemoryDatabase**: Testes de integração
@@ -125,6 +133,7 @@ graph TB
 ## 🚀 Como Executar
 
 ### Pré-requisitos
+
 - .NET 8 SDK
 - Docker ou Podman
 - Git
@@ -193,6 +202,7 @@ dotnet test --filter "SaleRepositoryTests"
 ```
 
 **14 Testes Unitários** cobrindo:
+
 - ✅ Operações CRUD completas
 - ✅ Carregamento de relacionamentos
 - ✅ Consultas especializadas
@@ -202,26 +212,31 @@ dotnet test --filter "SaleRepositoryTests"
 ## 📝 Decisões Técnicas
 
 ### 🎯 **Por que Clean Architecture?**
+
 - **Testabilidade**: Facilita testes unitários e de integração
 - **Manutenibilidade**: Código organizado e fácil de modificar
 - **Flexibilidade**: Permite troca de tecnologias sem impacto no domínio
 
 ### 🎯 **Por que Repository Pattern?**
+
 - **Abstração**: Isola a lógica de acesso a dados
 - **Testabilidade**: Permite mocks e testes isolados
 - **Flexibilidade**: Facilita mudanças na persistência
 
 ### 🎯 **Por que Entity Framework Core?**
+
 - **Produtividade**: ORM maduro e bem documentado
 - **Migrações**: Controle de versão do banco de dados
 - **Performance**: Otimizações automáticas e controle granular
 
 ### 🎯 **Por que PostgreSQL?**
+
 - **Robustez**: Banco enterprise com recursos avançados
 - **Performance**: Otimizado para aplicações complexas
 - **Conformidade**: ACID e transações confiáveis
 
 ### 🎯 **Por que Docker?**
+
 - **Consistência**: Mesmo ambiente em desenvolvimento e produção
 - **Isolamento**: Serviços independentes e versionados
 - **Portabilidade**: Execução em qualquer sistema
@@ -229,11 +244,13 @@ dotnet test --filter "SaleRepositoryTests"
 ## 🔧 Configurações
 
 ### Environment Variables
+
 - `ConnectionStrings__DefaultConnection`: String de conexão PostgreSQL
 - `Jwt__SecretKey`: Chave secreta para JWT
 - `ASPNETCORE_ENVIRONMENT`: Ambiente de execução
 
 ### Portas Padrão
+
 - **API**: 8080 (HTTP), 8081 (HTTPS)
 - **PostgreSQL**: 5432
 - **MongoDB**: 27017
@@ -266,4 +283,4 @@ Para dúvidas ou suporte, consulte a documentação da API em `/swagger` quando 
 
 **Status do Projeto**: 🟢 **Em Desenvolvimento Ativo**
 
-*Desenvolvido com ❤️ para o Ambev Developer Evaluation*
+_Desenvolvido com ❤️ para o Ambev Developer Evaluation_

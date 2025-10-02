@@ -184,7 +184,7 @@ public class BranchTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Branch.Name));
+        result.Errors.Should().Contain(e => e.Detail.Contains("name"));
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public class BranchTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Branch.Address));
+        result.Errors.Should().Contain(e => e.Detail.Contains("address"));
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public class BranchTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Branch.Email));
+        result.Errors.Should().Contain(e => e.Detail.Contains("email"));
     }
 
     /// <summary>

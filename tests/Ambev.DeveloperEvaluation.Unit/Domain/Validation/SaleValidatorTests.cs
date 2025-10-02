@@ -262,14 +262,14 @@ public class SaleValidatorTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Create items that together exceed 20 units for the same product
         var item1 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product);
         var item2 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product);
-        
-        item1.Quantity = 12;
-        item2.Quantity = 10; // Total: 22 units
-        
+
+        item1.UpdateQuantity(12);
+        item2.UpdateQuantity(10); // Total: 22 units
+
         sale.Items.Add(item1);
         sale.Items.Add(item2);
 
@@ -290,14 +290,14 @@ public class SaleValidatorTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Create items that together equal exactly 20 units for the same product
         var item1 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product);
         var item2 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product);
-        
-        item1.Quantity = 12;
-        item2.Quantity = 8; // Total: 20 units (at limit)
-        
+
+        item1.UpdateQuantity(12);
+        item2.UpdateQuantity(8); // Total: 20 units (at limit)
+
         sale.Items.Add(item1);
         sale.Items.Add(item2);
 
@@ -317,15 +317,15 @@ public class SaleValidatorTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Create items where cancelled items would exceed limit, but active items don't
         var item1 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product);
-        var item2 = SaleItemTestData.GenerateCancelledSaleItem(sale.Id);
-        
-        item1.Quantity = 15;
-        item2.Quantity = 10; // This is cancelled, so shouldn't count
-        item2.Product = product;
-        
+        var item2 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product);
+
+        item1.UpdateQuantity(15);
+        item2.UpdateQuantity(10); // This will be cancelled, so shouldn't count
+        item2.Cancel(); // Cancel after setting quantity
+
         sale.Items.Add(item1);
         sale.Items.Add(item2);
 
@@ -345,10 +345,10 @@ public class SaleValidatorTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var invalidItem = SaleItemTestData.GenerateValidSaleItem(sale.Id);
-        
+
         // Make the item invalid
         invalidItem.Quantity = 0; // Invalid quantity
-        
+
         sale.Items.Add(invalidItem);
 
         // Act
@@ -369,13 +369,13 @@ public class SaleValidatorTests
         var sale = SaleTestData.GenerateValidSale();
         var product1 = ProductTestData.GenerateValidProduct();
         var product2 = ProductTestData.GenerateValidProduct();
-        
+
         var item1 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product1);
         var item2 = SaleItemTestData.GenerateValidSaleItem(sale.Id, product2);
-        
-        item1.Quantity = 5;
-        item2.Quantity = 8;
-        
+
+        item1.UpdateQuantity(5);
+        item2.UpdateQuantity(8);
+
         sale.Items.Add(item1);
         sale.Items.Add(item2);
 

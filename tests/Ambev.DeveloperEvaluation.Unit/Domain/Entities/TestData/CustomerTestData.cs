@@ -24,7 +24,7 @@ public static class CustomerTestData
         .RuleFor(c => c.Id, _ => Guid.NewGuid()) // Ensure unique ID for each customer
         .RuleFor(c => c.Name, f => f.Person.FullName)
         .RuleFor(c => c.Email, f => f.Internet.Email().ToLowerInvariant())
-        .RuleFor(c => c.Phone, f => f.Phone.PhoneNumber("+55 (##) #####-####"))
+        .RuleFor(c => c.Phone, f => "+55" + f.Random.String2(10, "123456789"))
         .RuleFor(c => c.Address, f => f.Address.FullAddress())
         .RuleFor(c => c.BirthDate, f => f.Date.Between(DateTime.Today.AddYears(-80), DateTime.Today.AddYears(-18)))
         .RuleFor(c => c.IsActive, _ => true)

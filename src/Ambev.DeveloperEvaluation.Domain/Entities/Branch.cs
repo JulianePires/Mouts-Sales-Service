@@ -160,34 +160,6 @@ public class Branch : BaseEntity, IBranch
     }
 
     /// <summary>
-    /// Updates the branch information.
-    /// </summary>
-    /// <param name="name">The new branch name.</param>
-    /// <param name="address">The new branch address.</param>
-    /// <param name="phone">The new branch phone number.</param>
-    /// <param name="email">The new branch email.</param>
-    /// <param name="manager">The new branch manager name.</param>
-    public void UpdateInfo(string? name = null, string? address = null, string? phone = null, string? email = null, string? manager = null)
-    {
-        if (!string.IsNullOrWhiteSpace(name))
-            Name = name.Trim();
-
-        if (!string.IsNullOrWhiteSpace(address))
-            Address = address.Trim();
-
-        if (phone != null)
-            Phone = phone.Trim();
-
-        if (email != null)
-            Email = email.Trim();
-
-        if (!string.IsNullOrWhiteSpace(manager))
-            Manager = manager.Trim();
-
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    /// <summary>
     /// Performs validation of the branch entity using the BranchValidator rules.
     /// </summary>
     /// <returns>

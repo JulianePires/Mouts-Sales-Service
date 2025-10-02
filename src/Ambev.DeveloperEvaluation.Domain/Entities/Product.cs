@@ -151,7 +151,7 @@ public class Product : BaseEntity, IProduct
     /// <param name="image">The product image URL.</param>
     /// <returns>A new Product instance.</returns>
     /// <exception cref="ArgumentException">Thrown when required parameters are null, empty, or invalid.</exception>
-    public static Product Create(string name, decimal price, string description, string category, 
+    public static Product Create(string name, decimal price, string description, string category,
         int stockQuantity = 0, int minStockLevel = 10, string? image = null)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -212,30 +212,6 @@ public class Product : BaseEntity, IProduct
             throw new ArgumentException("Product price must be greater than zero.", nameof(newPrice));
 
         Price = newPrice;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    /// <summary>
-    /// Updates the product information.
-    /// </summary>
-    /// <param name="name">The new product name.</param>
-    /// <param name="description">The new product description.</param>
-    /// <param name="category">The new product category.</param>
-    /// <param name="image">The new product image URL.</param>
-    public void UpdateInfo(string? name = null, string? description = null, string? category = null, string? image = null)
-    {
-        if (!string.IsNullOrWhiteSpace(name))
-            Name = name.Trim();
-
-        if (description != null)
-            Description = description.Trim();
-
-        if (!string.IsNullOrWhiteSpace(category))
-            Category = category.Trim();
-
-        if (image != null)
-            Image = image.Trim();
-
         UpdatedAt = DateTime.UtcNow;
     }
 

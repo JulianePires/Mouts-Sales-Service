@@ -14,10 +14,14 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+21d340ebd9156b6dc54f15f3d06aa4304ac822fd")]
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+85a8381081a588a44c870b696c94947474188cb8")]
 >>>>>>> 2a57f4c (Refactor test project structure and update assembly information)
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a57f4c25d298b65b8cd916fee187994fc42dd26")]
+>>>>>>> bce8ef1 (Remove unnecessary NuGet cache and project restore files from Ambev.DeveloperEvaluation.Unit tests)
 [assembly: System.Reflection.AssemblyProductAttribute("Ambev.DeveloperEvaluation.Integration")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ambev.DeveloperEvaluation.Integration")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 2687e27db379478fde9ea38103865c0e56b755a9104219ced2074d37205fb542
 =======
 cc4e34a66af83854fa8e7bea5d4e1b6ac360f3aaf5abd79b984923d2ccc5ef67
 >>>>>>> 2a57f4c (Refactor test project structure and update assembly information)
+=======
+105e073b1ee5298697ac68cea012134a3e63106b6674af2b1b1a7a74023abe25
+>>>>>>> bce8ef1 (Remove unnecessary NuGet cache and project restore files from Ambev.DeveloperEvaluation.Unit tests)

@@ -5,7 +5,7 @@ on:
   push:
     branches: # Specify your branches here
       - main # The 'main' branch
-      - 'releases/*' # The release branches
+      - "releases/*" # The release branches
 
 jobs:
   qodana:
@@ -15,14 +15,14 @@ jobs:
       pull-requests: write
       checks: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
-          fetch-depth: 0  # a full history is required for pull request analysis
-      - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2025.2
+          ref: ${{ github.event.pull_request.head.sha }} # to check out the actual pull request commit, not the merge commit
+          fetch-depth: 0 # a full history is required for pull request analysis
+      - name: "Qodana Scan"
+        uses: JetBrains/qodana-action@99b1a8b0be4e9db49f5b3675dd2a8a7b13e7b7c8 # v2025.2
         with:
           pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1054039437 }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
+          QODANA_ENDPOINT: "https://qodana.cloud"

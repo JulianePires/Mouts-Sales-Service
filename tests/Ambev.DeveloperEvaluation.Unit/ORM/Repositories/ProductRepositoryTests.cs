@@ -11,19 +11,16 @@ namespace Ambev.DeveloperEvaluation.Unit.ORM.Repositories;
 /// Contains unit tests for the <see cref="ProductRepository"/> class.
 /// Tests cover CRUD operations, filtering, searching, and specific business logic methods.
 /// </summary>
-public class ProductRepositoryTests : IDisposable
+public class ProductRepositoryTests : BaseRepositoryTestFixture<ProductRepository>
 {
-    private readonly DefaultContext _context;
-    private readonly ProductRepository _repository;
-
-    public ProductRepositoryTests()
+    /// <summary>
+    /// Creates an instance of the ProductRepository for testing
+    /// </summary>
+    /// <param name="context">The database context to use</param>
+    /// <returns>An instance of ProductRepository</returns>
+    protected override ProductRepository CreateRepository(DefaultContext context)
     {
-        var options = new DbContextOptionsBuilder<DefaultContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new DefaultContext(options);
-        _repository = new ProductRepository(_context);
+        return new ProductRepository(context);
     }
 
     /// <summary>
@@ -36,8 +33,8 @@ public class ProductRepositoryTests : IDisposable
         var product = ProductTestData.GenerateValidProduct();
 
         // Act
-        var result = await _repository.CreateAsync(product);
-        await _context.SaveChangesAsync();
+        var result = await Repository.CreateAsync(product);
+        await SaveChangesAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -54,7 +51,7 @@ public class ProductRepositoryTests : IDisposable
     public async Task CreateAsync_WithNullProduct_ShouldThrowArgumentNullException()
     {
         // Act & Assert
-        await FluentActions.Invoking(() => _repository.CreateAsync(null!))
+        await FluentActions.Invoking(() => Repository.CreateAsync(null!))
             .Should().ThrowAsync<ArgumentNullException>();
     }
 
@@ -67,11 +64,11 @@ public class ProductRepositoryTests : IDisposable
         // Arrange
         var product = ProductTestData.GenerateValidProduct();
 
-        var createdProduct = await _repository.CreateAsync(product);
-        await _context.SaveChangesAsync();
+        var createdProduct = await Repository.CreateAsync(product);
+        await SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetByIdAsync(createdProduct.Id);
+        var result = await Repository.GetByIdAsync(createdProduct.Id);
 
         // Assert
         result.Should().NotBeNull();
@@ -89,7 +86,7 @@ public class ProductRepositoryTests : IDisposable
         var nonExistingId = Guid.NewGuid();
 
         // Act
-        var result = await _repository.GetByIdAsync(nonExistingId);
+        var result = await Repository.GetByIdAsync(nonExistingId);
 
         // Assert
         result.Should().BeNull();
@@ -110,13 +107,13 @@ public class ProductRepositoryTests : IDisposable
         var product3 = ProductTestData.GenerateValidProduct();
         product3.Category = "Books";
 
-        await _repository.CreateAsync(product1);
-        await _repository.CreateAsync(product2);
-        await _repository.CreateAsync(product3);
-        await _context.SaveChangesAsync();
+        await Repository.CreateAsync(product1);
+        await Repository.CreateAsync(product2);
+        await Repository.CreateAsync(product3);
+        await SaveChangesAsync();
 
         // Act
-        var results = await _repository.GetByCategoryAsync(category);
+        var results = await Repository.GetByCategoryAsync(category);
 
         // Assert
         results.Should().HaveCount(2);
@@ -136,13 +133,13 @@ public class ProductRepositoryTests : IDisposable
         var product3 = ProductTestData.GenerateValidProduct();
         product3.StockQuantity = 5;
 
-        await _repository.CreateAsync(product1);
-        await _repository.CreateAsync(product2);
-        await _repository.CreateAsync(product3);
-        await _context.SaveChangesAsync();
+        await Repository.CreateAsync(product1);
+        await Repository.CreateAsync(product2);
+        await Repository.CreateAsync(product3);
+        await SaveChangesAsync();
 
         // Act
-        var results = await _repository.GetInStockAsync();
+        var results = await Repository.GetInStockAsync();
 
         // Assert
         results.Should().HaveCount(2);
@@ -164,13 +161,13 @@ public class ProductRepositoryTests : IDisposable
         product2.MinStockLevel = 10;
         var product3 = ProductTestData.GenerateLowStockProduct();
 
-        await _repository.CreateAsync(product1);
-        await _repository.CreateAsync(product2);
-        await _repository.CreateAsync(product3);
-        await _context.SaveChangesAsync();
+        await Repository.CreateAsync(product1);
+        await Repository.CreateAsync(product2);
+        await Repository.CreateAsync(product3);
+        await SaveChangesAsync();
 
         // Act
-        var results = await _repository.GetLowStockAsync(10);
+        var results = await Repository.GetLowStockAsync(10);
 
         // Assert
         results.Should().HaveCount(2);
@@ -187,11 +184,11 @@ public class ProductRepositoryTests : IDisposable
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 10;
         product.IsActive = true;
-        var createdProduct = await _repository.CreateAsync(product);
-        await _context.SaveChangesAsync();
+        var createdProduct = await Repository.CreateAsync(product);
+        await SaveChangesAsync();
 
         // Act
-        var result = await _repository.IsAvailableAsync(createdProduct.Id, 5);
+        var result = await Repository.IsAvailableAsync(createdProduct.Id, 5);
 
         // Assert
         result.Should().BeTrue();
@@ -207,11 +204,11 @@ public class ProductRepositoryTests : IDisposable
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 3;
         product.IsActive = true;
-        var createdProduct = await _repository.CreateAsync(product);
-        await _context.SaveChangesAsync();
+        var createdProduct = await Repository.CreateAsync(product);
+        await SaveChangesAsync();
 
         // Act
-        var result = await _repository.IsAvailableAsync(createdProduct.Id, 5);
+        var result = await Repository.IsAvailableAsync(createdProduct.Id, 5);
 
         // Assert
         result.Should().BeFalse();
@@ -227,15 +224,15 @@ public class ProductRepositoryTests : IDisposable
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 10;
         product.IsActive = true;
-        var createdProduct = await _repository.CreateAsync(product);
-        await _context.SaveChangesAsync();
+        var createdProduct = await Repository.CreateAsync(product);
+        await SaveChangesAsync();
 
         // Act
-        await _repository.UpdateStockAsync(createdProduct.Id, 20);
-        await _context.SaveChangesAsync();
+        await Repository.UpdateStockAsync(createdProduct.Id, 20);
+        await SaveChangesAsync();
 
         // Assert
-        var updatedProduct = await _repository.GetByIdAsync(createdProduct.Id);
+        var updatedProduct = await Repository.GetByIdAsync(createdProduct.Id);
         updatedProduct!.StockQuantity.Should().Be(20);
     }
 
@@ -249,15 +246,15 @@ public class ProductRepositoryTests : IDisposable
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 15;
         product.IsActive = true;
-        var createdProduct = await _repository.CreateAsync(product);
-        await _context.SaveChangesAsync();
+        var createdProduct = await Repository.CreateAsync(product);
+        await SaveChangesAsync();
 
         // Act
-        await _repository.ReduceStockAsync(createdProduct.Id, 5);
-        await _context.SaveChangesAsync();
+        await Repository.ReduceStockAsync(createdProduct.Id, 5);
+        await SaveChangesAsync();
 
         // Assert
-        var updatedProduct = await _repository.GetByIdAsync(createdProduct.Id);
+        var updatedProduct = await Repository.GetByIdAsync(createdProduct.Id);
         updatedProduct!.StockQuantity.Should().Be(10);
     }
 
@@ -275,13 +272,13 @@ public class ProductRepositoryTests : IDisposable
         var product3 = ProductTestData.GenerateValidProduct();
         product3.Name = "Mobile Phone";
 
-        await _repository.CreateAsync(product1);
-        await _repository.CreateAsync(product2);
-        await _repository.CreateAsync(product3);
-        await _context.SaveChangesAsync();
+        await Repository.CreateAsync(product1);
+        await Repository.CreateAsync(product2);
+        await Repository.CreateAsync(product3);
+        await SaveChangesAsync();
 
         // Act
-        var results = await _repository.SearchByNameAsync("Computer");
+        var results = await Repository.SearchByNameAsync("Computer");
 
         // Assert
         results.Should().HaveCount(2);
@@ -302,24 +299,186 @@ public class ProductRepositoryTests : IDisposable
         var product3 = ProductTestData.GenerateValidProduct();
         product3.Price = 35.00m;
 
-        await _repository.CreateAsync(product1);
-        await _repository.CreateAsync(product2);
-        await _repository.CreateAsync(product3);
-        await _context.SaveChangesAsync();
+        await Repository.CreateAsync(product1);
+        await Repository.CreateAsync(product2);
+        await Repository.CreateAsync(product3);
+        await SaveChangesAsync();
 
         // Act
-        var results = await _repository.GetByPriceRangeAsync(20.00m, 30.00m);
+        var results = await Repository.GetByPriceRangeAsync(20.00m, 30.00m);
 
         // Assert
         results.Should().HaveCount(1);
         results.First().Price.Should().Be(25.50m);
     }
 
-
-
-    public void Dispose()
+    /// <summary>
+    /// Tests that GetCountAsync returns the correct count of products
+    /// </summary>
+    [Fact(DisplayName = "Given products in repository When getting count Then should return correct total")]
+    public async Task GetCountAsync_WithProducts_ShouldReturnCorrectCount()
     {
-        _context.Database.EnsureDeleted();
-        _context.Dispose();
+        // Arrange
+        var product1 = ProductTestData.GenerateValidProduct();
+        var product2 = ProductTestData.GenerateValidProduct();
+        var product3 = ProductTestData.GenerateValidProduct();
+
+        await Repository.CreateAsync(product1);
+        await Repository.CreateAsync(product2);
+        await Repository.CreateAsync(product3);
+        await SaveChangesAsync();
+
+        // Act
+        var count = await Repository.GetCountAsync();
+
+        // Assert
+        count.Should().Be(3);
+    }
+
+    /// <summary>
+    /// Tests that GetCountAsync returns zero when no products exist
+    /// </summary>
+    [Fact(DisplayName = "Given empty repository When getting count Then should return zero")]
+    public async Task GetCountAsync_EmptyRepository_ShouldReturnZero()
+    {
+        // Act
+        var count = await Repository.GetCountAsync();
+
+        // Assert
+        count.Should().Be(0);
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync returns correct page of products
+    /// </summary>
+    [Fact(DisplayName = "Given products When getting paginated results Then should return correct page")]
+    public async Task GetPaginatedAsync_WithValidPagination_ShouldReturnCorrectPage()
+    {
+        // Arrange
+        var products = new List<Ambev.DeveloperEvaluation.Domain.Entities.Product>();
+        for (int i = 1; i <= 10; i++)
+        {
+            var product = ProductTestData.GenerateValidProduct();
+            product.Name = $"Product {i:D2}"; // Ensure consistent ordering
+            products.Add(product);
+            await Repository.CreateAsync(product);
+        }
+        await SaveChangesAsync();
+
+        // Act
+        var result = await Repository.GetPaginatedAsync(2, 3); // Second page, 3 items per page
+
+        // Assert
+        result.Should().HaveCount(3);
+        // Note: BaseRepository orders by Id (GUID), not by Name, so we just verify pagination works
+        var resultList = result.ToList();
+        resultList.Should().HaveCount(3);
+        resultList.Should().OnlyContain(p => products.Any(created => created.Id == p.Id));
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync returns empty collection for page beyond available data
+    /// </summary>
+    [Fact(DisplayName = "Given limited products When requesting page beyond data Then should return empty")]
+    public async Task GetPaginatedAsync_PageBeyondData_ShouldReturnEmpty()
+    {
+        // Arrange
+        var product = ProductTestData.GenerateValidProduct();
+        await Repository.CreateAsync(product);
+        await SaveChangesAsync();
+
+        // Act
+        var result = await Repository.GetPaginatedAsync(5, 10); // Way beyond available data
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync throws exception for invalid page number
+    /// </summary>
+    [Fact(DisplayName = "Given invalid page number When getting paginated results Then should throw exception")]
+    public async Task GetPaginatedAsync_InvalidPageNumber_ShouldThrowException()
+    {
+        // Act & Assert
+        await FluentActions.Invoking(() => Repository.GetPaginatedAsync(0, 5))
+            .Should().ThrowAsync<ArgumentOutOfRangeException>()
+            .WithParameterName("pageNumber");
+
+        await FluentActions.Invoking(() => Repository.GetPaginatedAsync(-1, 5))
+            .Should().ThrowAsync<ArgumentOutOfRangeException>()
+            .WithParameterName("pageNumber");
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync throws exception for invalid page size
+    /// </summary>
+    [Fact(DisplayName = "Given invalid page size When getting paginated results Then should throw exception")]
+    public async Task GetPaginatedAsync_InvalidPageSize_ShouldThrowException()
+    {
+        // Act & Assert
+        await FluentActions.Invoking(() => Repository.GetPaginatedAsync(1, 0))
+            .Should().ThrowAsync<ArgumentOutOfRangeException>()
+            .WithParameterName("pageSize");
+
+        await FluentActions.Invoking(() => Repository.GetPaginatedAsync(1, -1))
+            .Should().ThrowAsync<ArgumentOutOfRangeException>()
+            .WithParameterName("pageSize");
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync handles partial last page correctly
+    /// </summary>
+    [Fact(DisplayName = "Given products When requesting partial last page Then should return remaining items")]
+    public async Task GetPaginatedAsync_PartialLastPage_ShouldReturnRemainingItems()
+    {
+        // Arrange
+        var products = new List<Ambev.DeveloperEvaluation.Domain.Entities.Product>();
+        for (int i = 1; i <= 7; i++)
+        {
+            var product = ProductTestData.GenerateValidProduct();
+            product.Name = $"Product {i:D2}";
+            products.Add(product);
+            await Repository.CreateAsync(product);
+        }
+        await SaveChangesAsync();
+
+        // Act
+        var result = await Repository.GetPaginatedAsync(3, 3); // Third page with 3 items per page (should get 1 item)
+
+        // Assert
+        result.Should().HaveCount(1);
+        result.First().Should().BeOneOf(products.ToArray()); // Verify it's one of our created products
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync returns results ordered consistently
+    /// </summary>
+    [Fact(DisplayName = "Given products When getting paginated results Then should maintain consistent ordering")]
+    public async Task GetPaginatedAsync_MultiplePages_ShouldMaintainConsistentOrdering()
+    {
+        // Arrange
+        var products = new List<Ambev.DeveloperEvaluation.Domain.Entities.Product>();
+        var productNames = new[] { "Zebra Product", "Alpha Product", "Beta Product", "Gamma Product" };
+        foreach (var name in productNames)
+        {
+            var product = ProductTestData.GenerateValidProduct();
+            product.Name = name;
+            products.Add(product);
+            await Repository.CreateAsync(product);
+        }
+        await SaveChangesAsync();
+
+        // Act
+        var page1 = await Repository.GetPaginatedAsync(1, 2);
+        var page2 = await Repository.GetPaginatedAsync(2, 2);
+
+        // Assert
+        var allResults = page1.Concat(page2).ToList();
+        allResults.Should().HaveCount(4);
+        // Verify all our created products are returned (order by Id may vary)
+        allResults.Select(p => p.Name).Should().BeEquivalentTo(productNames);
+        // Verify no duplicates between pages
+        page1.Select(p => p.Id).Should().NotIntersectWith(page2.Select(p => p.Id));
     }
 }

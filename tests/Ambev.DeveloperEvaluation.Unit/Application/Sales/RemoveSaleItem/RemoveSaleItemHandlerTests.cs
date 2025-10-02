@@ -55,7 +55,7 @@ public class RemoveSaleItemHandlerTests
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 50;
         var initialStock = product.StockQuantity;
-        
+
         var saleItem = SaleItem.Create(sale.Id, product, 5, 10.00m);
         saleItem.Id = command.ItemId;
         sale.Items.Clear();
@@ -78,11 +78,11 @@ public class RemoveSaleItemHandlerTests
         Assert.Equal(product.Id, result.ProductId);
         Assert.Equal(5, result.RemovedQuantity);
         Assert.True(result.IsCancelled);
-        
+
         // Verify repositories were called
         await _productRepository.Received(1).UpdateAsync(product, Arg.Any<CancellationToken>());
         await _saleRepository.Received(1).UpdateAsync(sale, Arg.Any<CancellationToken>());
-        
+
         // Verify stock was returned (check that product stock increased)
         Assert.Equal(55, product.StockQuantity); // 50 + 5 = 55
     }
@@ -197,7 +197,7 @@ public class RemoveSaleItemHandlerTests
         var sale = SaleTestData.GenerateValidSale();
         sale.Id = command.SaleId;
         var product = ProductTestData.GenerateValidProduct();
-        
+
         var saleItem = SaleItem.Create(sale.Id, product, 5, 10.00m);
         saleItem.Id = command.ItemId;
         saleItem.Cancel(); // Already cancelled

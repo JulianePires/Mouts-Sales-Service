@@ -55,7 +55,7 @@ public class UpdateSaleItemHandlerTests
         sale.Id = command.SaleId;
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 100;
-        
+
         // Create a sale item
         var saleItem = SaleItem.Create(sale.Id, product, 5, 10.00m);
         saleItem.Id = command.ItemId;
@@ -145,7 +145,7 @@ public class UpdateSaleItemHandlerTests
         sale.Id = command.SaleId;
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 5; // Only 5 available, but need 10
-        
+
         var saleItem = SaleItem.Create(sale.Id, product, 5, 10.00m);
         saleItem.Id = command.ItemId;
         sale.Items.Clear();
@@ -181,7 +181,7 @@ public class UpdateSaleItemHandlerTests
         var product = ProductTestData.GenerateValidProduct();
         product.StockQuantity = 100;
         var initialStock = product.StockQuantity;
-        
+
         var saleItem = SaleItem.Create(sale.Id, product, 5, 10.00m);
         saleItem.Id = command.ItemId;
         sale.Items.Clear();

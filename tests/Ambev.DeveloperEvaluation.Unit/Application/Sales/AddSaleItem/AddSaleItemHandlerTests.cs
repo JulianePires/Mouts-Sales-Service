@@ -78,7 +78,7 @@ public class AddSaleItemHandlerTests
         Assert.Equal(command.ProductId, result.ProductId);
         Assert.Equal(command.Quantity, result.Quantity);
         Assert.Equal(command.UnitPrice.Value, result.UnitPrice);
-        
+
         await _productRepository.Received(1).UpdateAsync(Arg.Any<Product>(), Arg.Any<CancellationToken>());
         await _saleRepository.Received(1).UpdateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>());
     }

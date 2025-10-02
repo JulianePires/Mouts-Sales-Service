@@ -178,6 +178,55 @@ public class Customer : BaseEntity, ICustomer
     }
 
     /// <summary>
+    /// Updates customer information.
+    /// </summary>
+    /// <param name="name">Optional new name for the customer.</param>
+    /// <param name="email">Optional new email for the customer.</param>
+    /// <param name="phone">Optional new phone for the customer.</param>
+    /// <param name="address">Optional new address for the customer.</param>
+    /// <param name="birthDate">Optional new birth date for the customer.</param>
+    /// <exception cref="ArgumentException">Thrown when email format is invalid.</exception>
+    public void UpdateInfo(string? name = null, string? email = null, string? phone = null, string? address = null, DateTime? birthDate = null)
+    {
+        if (name != null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Customer name cannot be null or empty.", nameof(name));
+            Name = name.Trim();
+        }
+
+        if (email != null)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Customer email cannot be null or empty.", nameof(email));
+            if (!IsValidEmail(email))
+                throw new ArgumentException("Invalid email format.", nameof(email));
+            Email = email.Trim().ToLowerInvariant();
+        }
+
+        if (phone != null)
+            Phone = phone.Trim();
+
+        if (address != null)
+            Address = address.Trim();
+
+        if (birthDate.HasValue)
+            BirthDate = birthDate;
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Determines if the customer is of legal age (18 years or older).
+    /// </summary>
+    /// <returns>True if the customer is 18 or older, false otherwise or if birth date is not set.</returns>
+    public bool IsOfLegalAge()
+    {
+        var age = GetAge();
+        return age.HasValue && age.Value >= 18;
+    }
+
+    /// <summary>
     /// Performs validation of the customer entity using the CustomerValidator rules.
     /// </summary>
     /// <returns>

@@ -160,6 +160,47 @@ public class Branch : BaseEntity, IBranch
     }
 
     /// <summary>
+    /// Updates branch information.
+    /// </summary>
+    /// <param name="name">Optional new name for the branch.</param>
+    /// <param name="address">Optional new address for the branch.</param>
+    /// <param name="phone">Optional new phone for the branch.</param>
+    /// <param name="email">Optional new email for the branch.</param>
+    /// <param name="manager">Optional new manager for the branch.</param>
+    /// <exception cref="ArgumentException">Thrown when required parameters are null or empty.</exception>
+    public void UpdateInfo(string? name = null, string? address = null, string? phone = null, string? email = null, string? manager = null)
+    {
+        if (name != null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Branch name cannot be null or empty.", nameof(name));
+            Name = name.Trim();
+        }
+
+        if (address != null)
+        {
+            if (string.IsNullOrWhiteSpace(address))
+                throw new ArgumentException("Branch address cannot be null or empty.", nameof(address));
+            Address = address.Trim();
+        }
+
+        if (phone != null)
+            Phone = phone.Trim();
+
+        if (email != null)
+            Email = email.Trim();
+
+        if (manager != null)
+        {
+            if (string.IsNullOrWhiteSpace(manager))
+                throw new ArgumentException("Branch manager cannot be null or empty.", nameof(manager));
+            Manager = manager.Trim();
+        }
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
     /// Performs validation of the branch entity using the BranchValidator rules.
     /// </summary>
     /// <returns>

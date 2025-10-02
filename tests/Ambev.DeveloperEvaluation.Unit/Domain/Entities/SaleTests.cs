@@ -23,7 +23,7 @@ public class SaleTests
         var branch = BranchTestData.GenerateValidBranch();
 
         // Act
-        var sale = Sale.Create(customer, branch);
+        var sale = Sale.Create(customer, branch, "SAL202410021238");
 
         // Assert
         sale.Should().NotBeNull();
@@ -47,7 +47,7 @@ public class SaleTests
         var branch = BranchTestData.GenerateValidBranch();
 
         // Act & Assert
-        var action = () => Sale.Create(null!, branch);
+        var action = () => Sale.Create(null!, branch, "SAL202410021238");
         action.Should().Throw<ArgumentException>()
             .WithMessage("Customer cannot be null.*");
     }
@@ -63,7 +63,7 @@ public class SaleTests
         var branch = BranchTestData.GenerateValidBranch();
 
         // Act & Assert
-        var action = () => Sale.Create(inactiveCustomer, branch);
+        var action = () => Sale.Create(inactiveCustomer, branch, "SAL202410021239");
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot create sale for inactive customer.*");
     }
@@ -79,7 +79,7 @@ public class SaleTests
         var inactiveBranch = BranchTestData.GenerateInactiveBranch();
 
         // Act & Assert
-        var action = () => Sale.Create(customer, inactiveBranch);
+        var action = () => Sale.Create(customer, inactiveBranch, "SAL202410021240");
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot create sale for inactive branch.*");
     }

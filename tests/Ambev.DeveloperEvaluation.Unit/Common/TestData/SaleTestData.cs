@@ -21,8 +21,8 @@ public static class SaleTestData
     {
         var actualCustomer = customer ?? CustomerTestData.GenerateValidCustomer();
         var actualBranch = branch ?? BranchTestData.GenerateValidBranch();
-        
-        return Sale.Create(actualCustomer, actualBranch);
+
+        return Sale.Create(actualCustomer, actualBranch, "SAL202410021234");
     }
 
     /// <summary>
@@ -47,16 +47,16 @@ public static class SaleTestData
     public static Sale GenerateSaleWithMixedDiscounts()
     {
         var sale = GenerateValidSale();
-        
+
         // Add items with different discount levels
         var product1 = ProductTestData.GenerateValidProduct();
         var product2 = ProductTestData.GenerateValidProduct();
         var product3 = ProductTestData.GenerateValidProduct();
-        
+
         sale.AddItem(product1, 2);  // No discount
         sale.AddItem(product2, 6);  // 10% discount
         sale.AddItem(product3, 15); // 20% discount
-        
+
         return sale;
     }
 
@@ -68,9 +68,9 @@ public static class SaleTestData
     {
         var sale = GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         sale.AddItem(product, 20); // Maximum allowed quantity
-        
+
         return sale;
     }
 
@@ -93,8 +93,8 @@ public static class SaleTestData
     {
         var inactiveCustomer = CustomerTestData.GenerateInactiveCustomer();
         var branch = BranchTestData.GenerateValidBranch();
-        
-        return Sale.Create(inactiveCustomer, branch);
+
+        return Sale.Create(inactiveCustomer, branch, "SAL202410021235");
     }
 
     /// <summary>
@@ -105,8 +105,8 @@ public static class SaleTestData
     {
         var customer = CustomerTestData.GenerateValidCustomer();
         var inactiveBranch = BranchTestData.GenerateInactiveBranch();
-        
-        return Sale.Create(customer, inactiveBranch);
+
+        return Sale.Create(customer, inactiveBranch, "SAL202410021236");
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static class SaleTestData
         var customer = CustomerTestData.GenerateValidCustomer();
         var branch = BranchTestData.GenerateValidBranch();
         var futureDate = DateTime.UtcNow.AddDays(2);
-        
-        return Sale.Create(customer, branch, saleDate: futureDate);
+
+        return Sale.Create(customer, branch, "SAL202410021237", futureDate);
     }
 }

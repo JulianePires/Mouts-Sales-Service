@@ -33,7 +33,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public virtual async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
-        
+
         var entry = await _dbSet.AddAsync(entity, cancellationToken);
         return entry.Entity;
     }
@@ -58,7 +58,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
-        
+
         _dbSet.Update(entity);
         return Task.FromResult(entity);
     }

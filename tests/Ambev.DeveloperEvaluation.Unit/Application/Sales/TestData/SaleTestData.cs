@@ -61,12 +61,12 @@ public static class SaleTestData
         var branch = BranchTestData.GenerateValidBranch();
         var product1 = ProductTestData.GenerateValidProduct();
         var product2 = ProductTestData.GenerateValidProduct();
-        
+
         product1.StockQuantity = 100;
         product2.StockQuantity = 50;
 
         var sale = Sale.Create(customer, branch, "SAL202410021234", DateTime.UtcNow);
-        
+
         // Add items to the sale using the proper domain method
         sale.AddItem(product1, 5);
         sale.AddItem(product2, 3);
@@ -83,12 +83,12 @@ public static class SaleTestData
         var sale = GenerateValidSale();
         sale.IsCancelled = true;
         sale.UpdatedAt = DateTime.UtcNow;
-        
+
         foreach (var item in sale.Items)
         {
             item.IsCancelled = true;
         }
-        
+
         return sale;
     }
 
@@ -100,7 +100,7 @@ public static class SaleTestData
     public static List<Sale> GenerateSalesList(int count)
     {
         var sales = new List<Sale>();
-        
+
         for (int i = 0; i < count; i++)
         {
             var sale = GenerateValidSale();
@@ -108,7 +108,7 @@ public static class SaleTestData
             sale.SaleDate = DateTime.UtcNow.AddDays(-i);
             sales.Add(sale);
         }
-        
+
         return sales;
     }
 }

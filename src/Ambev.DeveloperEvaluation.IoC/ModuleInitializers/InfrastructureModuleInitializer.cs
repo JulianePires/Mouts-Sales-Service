@@ -30,12 +30,12 @@ public class InfrastructureModuleInitializer : IModuleInitializer
     {
         // Get the ORM assembly where repository implementations are located
         var ormAssembly = Assembly.GetAssembly(typeof(DefaultContext))!;
-        
+
         // Get all repository interface types from the Domain assembly
         var domainAssembly = Assembly.GetAssembly(typeof(IBaseRepository<>))!;
         var repositoryInterfaceTypes = domainAssembly.GetTypes()
-            .Where(t => t.IsInterface && 
-                       t.Name.EndsWith("Repository") && 
+            .Where(t => t.IsInterface &&
+                       t.Name.EndsWith("Repository") &&
                        t.Name.StartsWith("I"))
             .ToList();
 
@@ -44,8 +44,8 @@ public class InfrastructureModuleInitializer : IModuleInitializer
         {
             // Find the concrete implementation in the ORM assembly
             var implementationType = ormAssembly.GetTypes()
-                .FirstOrDefault(t => t.IsClass && 
-                               !t.IsAbstract && 
+                .FirstOrDefault(t => t.IsClass &&
+                               !t.IsAbstract &&
                                interfaceType.IsAssignableFrom(t));
 
             if (implementationType != null)

@@ -130,7 +130,7 @@ public class Sale : BaseEntity, ISale
     public Sale()
     {
         Id = Guid.NewGuid(); // Ensure Sale has a valid ID when created
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow.AddMilliseconds(-BusinessConstants.DateValidationBufferMilliseconds); // Slightly in the past to avoid validation timing issues
         SaleDate = DateTime.UtcNow;
         Items = new List<SaleItem>();
     }
@@ -197,7 +197,7 @@ public class Sale : BaseEntity, ISale
 
         var saleItem = SaleItem.Create(Id, product, quantity, unitPrice);
         Items.Add(saleItem);
-        
+
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
     }

@@ -55,6 +55,22 @@ public class SaleRepositoryTests : IDisposable
     }
 
     /// <summary>
+    /// Tests that CreateAsync throws an exception when null sale is provided.
+    /// </summary>
+    [Fact(DisplayName = "Given null sale When creating Then should throw ArgumentNullException")]
+    public async Task Given_NullSale_When_Creating_Then_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        Sale nullSale = null!;
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        {
+            await _repository.CreateAsync(nullSale);
+        });
+    }
+
+    /// <summary>
     /// Tests that GetByIdAsync retrieves the correct sale.
     /// </summary>
     [Fact(DisplayName = "Given existing sale ID When getting by ID Then should return correct sale")]
@@ -401,6 +417,42 @@ public class SaleRepositoryTests : IDisposable
         saleWithoutRelations.Branch.Should().NotBeNull();
         saleWithoutRelations.Items.Should().HaveCount(1);
         saleWithoutRelations.Items.First().Product.Should().NotBeNull();
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync throws exception for invalid page number.
+    /// </summary>
+    [Fact(DisplayName = "Given invalid page number When getting paginated sales Then should throw ArgumentOutOfRangeException")]
+    public async Task Given_InvalidPageNumber_When_GettingPaginatedSales_Then_ShouldThrowArgumentOutOfRangeException()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        {
+            await _repository.GetPaginatedAsync(0, 10);
+        });
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        {
+            await _repository.GetPaginatedAsync(-1, 10);
+        });
+    }
+
+    /// <summary>
+    /// Tests that GetPaginatedAsync throws exception for invalid page size.
+    /// </summary>
+    [Fact(DisplayName = "Given invalid page size When getting paginated sales Then should throw ArgumentOutOfRangeException")]
+    public async Task Given_InvalidPageSize_When_GettingPaginatedSales_Then_ShouldThrowArgumentOutOfRangeException()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        {
+            await _repository.GetPaginatedAsync(1, 0);
+        });
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        {
+            await _repository.GetPaginatedAsync(1, -5);
+        });
     }
 
     public void Dispose()

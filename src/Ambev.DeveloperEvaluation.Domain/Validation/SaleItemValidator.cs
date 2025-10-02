@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using FluentValidation;
 
@@ -45,7 +46,7 @@ public class SaleItemValidator : AbstractValidator<SaleItem>
             .When(item => !item.IsCancelled);
 
         RuleFor(item => item.CreatedAt)
-            .LessThanOrEqualTo(DateTime.UtcNow.AddMilliseconds(100))
+            .LessThanOrEqualTo(DateTime.UtcNow.AddMilliseconds(BusinessConstants.DateValidationBufferMilliseconds))
             .WithMessage("Sale item creation date cannot be in the future.");
 
         // Business rule validation: discount should match quantity

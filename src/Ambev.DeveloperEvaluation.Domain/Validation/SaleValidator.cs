@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using FluentValidation;
 
@@ -41,7 +42,7 @@ public class SaleValidator : AbstractValidator<Sale>
             .When(sale => !sale.IsCancelled);
 
         RuleFor(sale => sale.CreatedAt)
-            .LessThanOrEqualTo(DateTime.UtcNow.AddMilliseconds(100))
+            .LessThanOrEqualTo(DateTime.UtcNow.AddMilliseconds(BusinessConstants.DateValidationBufferMilliseconds))
             .WithMessage("Sale creation date cannot be in the future.");
 
         // Validate that customer is active

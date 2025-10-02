@@ -85,6 +85,22 @@ public class QuantityDiscountServiceTests
         exception.Message.Should().Contain("excede o limite máximo permitido");
     }
 
+    [Fact(DisplayName = "Given maximum allowed price When calculating discount Then should succeed")]
+    public void CalculateDiscount_MaximumAllowedPrice_ShouldSucceed()
+    {
+        // Arrange
+        var quantity = 10;
+        var maxPrice = 1_000_000m;
+        var expectedAmount = 2_000_000m; // 20% of 10 * 1,000,000
+
+        // Act
+        var discount = _discountService.CalculateDiscount(quantity, maxPrice);
+
+        // Assert
+        discount.Percentage.Should().Be(20m);
+        discount.Amount.Should().Be(expectedAmount);
+    }
+
     [Theory(DisplayName = "Given various quantities When checking eligibility Then should return correct value")]
     [InlineData(1, false)]
     [InlineData(3, false)]

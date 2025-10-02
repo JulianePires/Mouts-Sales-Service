@@ -152,6 +152,7 @@ public class SaleRepository : ISaleRepository
     /// <param name="cancellationToken">Cancellation token</param>
     public async Task LoadRelatedDataAsync(Sale sale, CancellationToken cancellationToken = default)
     {
+        // Load Customer and Branch references
         await _context.Entry(sale)
             .Reference(s => s.Customer)
             .LoadAsync(cancellationToken);
@@ -160,17 +161,12 @@ public class SaleRepository : ISaleRepository
             .Reference(s => s.Branch)
             .LoadAsync(cancellationToken);
 
+        // Load SaleItems collection with Products in a single query to avoid N+1
         await _context.Entry(sale)
             .Collection(s => s.Items)
+            .Query()
+            .Include(item => item.Product)
             .LoadAsync(cancellationToken);
-
-        // Load product for each sale item
-        foreach (var item in sale.Items)
-        {
-            await _context.Entry(item)
-                .Reference(i => i.Product)
-                .LoadAsync(cancellationToken);
-        }
     }
 
     /// <summary>
@@ -192,6 +188,11 @@ public class SaleRepository : ISaleRepository
     /// <returns>Paginated list of sales</returns>
     public async Task<IEnumerable<Sale>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
+        if (pageNumber <= 0)
+            throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+        if (pageSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
         return await _context.Sales
             .OrderByDescending(s => s.SaleDate)
             .Skip((pageNumber - 1) * pageSize)

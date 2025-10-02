@@ -7,6 +7,7 @@ Este é um sistema completo de gerenciamento de vendas desenvolvido seguindo os 
 ### 🚀 Objetivo Principal
 
 Desenvolver uma API robusta que gerencie:
+
 - **Transações de Vendas** com controle completo do ciclo de vida
 - **Gestão de Clientes** com dados pessoais e histórico
 - **Controle de Produtos** com estoque e precificação
@@ -18,24 +19,28 @@ Desenvolver uma API robusta que gerencie:
 Este projeto demonstra competências em:
 
 #### **Arquitetura & Design**
+
 - **Clean Architecture**: Separação clara de responsabilidades
 - **Domain-Driven Design**: Modelagem rica do domínio
 - **Repository Pattern**: Abstração da camada de dados
 - **SOLID Principles**: Princípios de orientação a objetos
 
 #### **Desenvolvimento Backend**
+
 - **.NET 8**: Framework moderno e performático
 - **Entity Framework Core**: ORM com controle total de dados
 - **Async/Await**: Programação assíncrona eficiente
 - **Dependency Injection**: Inversão de controle
 
 #### **Qualidade de Código**
+
 - **Unit Testing**: 14 testes unitários implementados
 - **Clean Code**: Código limpo e legível
 - **Documentação**: XML Documentation completa
 - **Validation**: Validação de domínio robusta
 
 #### **DevOps & Infraestrutura**
+
 - **Containerização**: Docker/Podman para consistência
 - **Migrations**: Controle de versão de banco de dados
 - **Multi-database**: PostgreSQL, MongoDB, Redis

@@ -307,6 +307,37 @@ public class SaleItemTests
     }
 
     /// <summary>
+    /// Tests that financial rounding works correctly for values that round both up and down.
+    /// </summary>
+    [Theory(DisplayName = "Given various decimal values When calculating totals Then should apply correct rounding")]
+    [InlineData(3, 10.334, 31.00, "Rounding down: 3 * 10.334 = 31.002 -> 31.00 (no discount)")]
+    [InlineData(3, 10.335, 31.01, "Rounding up: 3 * 10.335 = 31.005 -> 31.01 (no discount)")]
+    [InlineData(2, 33.334, 66.67, "Rounding down: 2 * 33.334 = 66.668 -> 66.67 (no discount)")]
+    [InlineData(2, 33.335, 66.67, "Rounding up: 2 * 33.335 = 66.670 -> 66.67 (no discount)")]
+    [InlineData(3, 33.50, 100.50, "Midpoint rounding: 3 * 33.50 = 100.500 -> 100.50 (no discount)")]
+    [InlineData(4, 25.125, 90.45, "With discount: 4 * 25.125 = 100.500, 10% discount = 90.45")]
+    [InlineData(10, 12.50, 100.00, "With discount: 10 * 12.50 = 125.00, 20% discount = 100.00")]
+    public void Given_VariousDecimalValues_When_CalculatingTotals_Then_ShouldApplyCorrectRounding(
+        int quantity,
+        decimal unitPrice,
+        decimal expectedTotal,
+        string description)
+    {
+        // Arrange
+        var saleId = Guid.NewGuid();
+        var product = ProductTestData.GenerateValidProduct();
+        product.Price = unitPrice;
+
+        // Act
+        var saleItem = SaleItem.Create(saleId, product, quantity, unitPrice);
+
+        // Assert
+        saleItem.TotalPrice.Should().Be(expectedTotal, description);
+        saleItem.UnitPrice.Should().Be(unitPrice);
+        saleItem.Quantity.Should().Be(quantity);
+    }
+
+    /// <summary>
     /// Tests that sale item interface implementation works correctly.
     /// </summary>
     [Fact(DisplayName = "Given sale item When accessing via interface Then properties should be exposed correctly")]

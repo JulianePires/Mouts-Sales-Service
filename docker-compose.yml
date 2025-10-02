@@ -14,9 +14,10 @@ services:
     ports:
       - "8080"
       - "8081"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    # volumes:
+      # UserSecrets and HTTPS certificates - Windows specific paths commented out for Linux
+      # - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      # - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database

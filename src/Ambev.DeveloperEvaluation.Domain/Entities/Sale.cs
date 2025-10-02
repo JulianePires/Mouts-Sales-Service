@@ -25,6 +25,16 @@ public class Sale : BaseEntity, ISale
     public DateTime SaleDate { get; set; }
 
     /// <summary>
+    /// Gets the unique identifier for the customer associated with this sale.
+    /// </summary>
+    public Guid CustomerId { get; set; }
+
+    /// <summary>
+    /// Gets the unique identifier for the branch associated with this sale.
+    /// </summary>
+    public Guid BranchId { get; set; }
+
+    /// <summary>
     /// Gets the customer associated with this sale.
     /// Contains customer information for the transaction.
     /// </summary>

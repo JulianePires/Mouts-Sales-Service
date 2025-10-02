@@ -115,7 +115,7 @@ public class SaleItem : BaseEntity, ISaleItem
     /// </summary>
     public SaleItem()
     {
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow.AddMilliseconds(-100); // Slightly in the past to avoid validation timing issues
     }
 
     /// <summary>

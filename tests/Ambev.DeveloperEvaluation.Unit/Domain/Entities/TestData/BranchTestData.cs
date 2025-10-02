@@ -24,7 +24,7 @@ public static class BranchTestData
         .RuleFor(b => b.Id, _ => Guid.NewGuid()) // Ensure unique ID for each branch
         .RuleFor(b => b.Name, f => f.Company.CompanyName())
         .RuleFor(b => b.Address, f => f.Address.FullAddress())
-        .RuleFor(b => b.Phone, f => f.Phone.PhoneNumber("+55 (##) #####-####"))
+        .RuleFor(b => b.Phone, f => "+55" + f.Random.String2(10, "123456789"))
         .RuleFor(b => b.Email, f => f.Internet.Email())
         .RuleFor(b => b.Manager, f => f.Person.FullName)
         .RuleFor(b => b.IsActive, _ => true)

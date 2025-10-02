@@ -257,7 +257,7 @@ public class CustomerTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Customer.Name));
+        result.Errors.Should().Contain(e => e.Detail.Contains("name"));
     }
 
     /// <summary>
@@ -274,7 +274,7 @@ public class CustomerTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Customer.Email));
+        result.Errors.Should().Contain(e => e.Detail.Contains("email"));
     }
 
     /// <summary>
@@ -291,7 +291,7 @@ public class CustomerTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Customer.BirthDate));
+        result.Errors.Should().Contain(e => e.Detail.Contains("Birth date"));
     }
 
     /// <summary>

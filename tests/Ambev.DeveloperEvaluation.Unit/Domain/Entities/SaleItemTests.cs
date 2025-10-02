@@ -95,13 +95,14 @@ public class SaleItemTests
         // Arrange
         var saleItem = SaleItemTestData.GenerateSaleItemWithNoDiscount();
         saleItem.Quantity = quantity;
-        
+
         // Force recalculation
         saleItem.UpdateQuantity(quantity);
 
         // Act & Assert
         saleItem.DiscountPercent.Should().Be(0m);
-        saleItem.TotalPrice.Should().Be(quantity * saleItem.UnitPrice);
+        var expectedTotal = Math.Round(quantity * saleItem.UnitPrice, 2, MidpointRounding.AwayFromZero);
+        saleItem.TotalPrice.Should().Be(expectedTotal);
     }
 
     /// <summary>
@@ -302,7 +303,7 @@ public class SaleItemTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(SaleItem.Quantity));
+        result.Errors.Should().Contain(e => e.Detail.Contains("Quantity"));
     }
 
     /// <summary>

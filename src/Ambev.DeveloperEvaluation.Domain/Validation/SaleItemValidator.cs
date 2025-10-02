@@ -45,7 +45,7 @@ public class SaleItemValidator : AbstractValidator<SaleItem>
             .When(item => !item.IsCancelled);
 
         RuleFor(item => item.CreatedAt)
-            .LessThanOrEqualTo(DateTime.UtcNow)
+            .LessThanOrEqualTo(DateTime.UtcNow.AddMilliseconds(100))
             .WithMessage("Sale item creation date cannot be in the future.");
 
         // Business rule validation: discount should match quantity

@@ -311,7 +311,7 @@ public class ProductTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Product.Name));
+        result.Errors.Should().Contain(e => e.Detail.Contains("name"));
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public class ProductTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Error == nameof(Product.Price));
+        result.Errors.Should().Contain(e => e.Detail.Contains("price"));
     }
 
     /// <summary>

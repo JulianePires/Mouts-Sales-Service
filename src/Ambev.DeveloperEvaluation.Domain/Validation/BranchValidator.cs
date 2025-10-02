@@ -37,15 +37,11 @@ public class BranchValidator : AbstractValidator<Branch>
             .MaximumLength(100)
             .WithMessage("Branch manager name cannot be longer than 100 characters.");
 
-        RuleFor(branch => branch.Email)
-            .SetValidator(new EmailValidator())
-            .When(branch => !string.IsNullOrWhiteSpace(branch.Email))
-            .WithMessage("Invalid email format for branch.");
+        RuleFor(user => user.Email).SetValidator(new EmailValidator());
 
-        RuleFor(branch => branch.Phone)
-            .SetValidator(new PhoneValidator())
-            .When(branch => !string.IsNullOrWhiteSpace(branch.Phone))
-            .WithMessage("Invalid phone format for branch.");
+        RuleFor(user => user.Phone)
+            .Matches(@"^\+[1-9]\d{10,14}$")
+            .WithMessage("Phone number must start with '+' followed by 11-15 digits.");
 
         RuleFor(branch => branch.CreatedAt)
             .LessThanOrEqualTo(DateTime.UtcNow)

@@ -23,8 +23,8 @@ jobs:
           dotnet --list-sdks
           dotnet --list-runtimes
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore *.sln
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore *.sln
       - name: Test
-        run: dotnet test --no-build
+        run: dotnet test --no-build *.sln

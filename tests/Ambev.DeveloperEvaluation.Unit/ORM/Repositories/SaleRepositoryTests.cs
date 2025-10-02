@@ -105,7 +105,7 @@ public class SaleRepositoryTests : IDisposable
         var customer = CustomerTestData.GenerateValidCustomer();
         var branch = BranchTestData.GenerateValidBranch();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         await _context.Customers.AddAsync(customer);
         await _context.Branches.AddAsync(branch);
         await _context.Products.AddAsync(product);
@@ -162,7 +162,7 @@ public class SaleRepositoryTests : IDisposable
         var customer1 = CustomerTestData.GenerateValidCustomer();
         var customer2 = CustomerTestData.GenerateValidCustomer();
         var branch = BranchTestData.GenerateValidBranch();
-        
+
         await _context.Customers.AddRangeAsync(customer1, customer2);
         await _context.Branches.AddAsync(branch);
         await _context.SaveChangesAsync();
@@ -170,7 +170,7 @@ public class SaleRepositoryTests : IDisposable
         var sale1 = Sale.Create(customer1, branch);
         var sale2 = Sale.Create(customer1, branch);
         var sale3 = Sale.Create(customer2, branch);
-        
+
         await _repository.CreateAsync(sale1);
         await _repository.CreateAsync(sale2);
         await _repository.CreateAsync(sale3);
@@ -193,7 +193,7 @@ public class SaleRepositoryTests : IDisposable
         var customer = CustomerTestData.GenerateValidCustomer();
         var branch1 = BranchTestData.GenerateValidBranch();
         var branch2 = BranchTestData.GenerateValidBranch();
-        
+
         await _context.Customers.AddAsync(customer);
         await _context.Branches.AddRangeAsync(branch1, branch2);
         await _context.SaveChangesAsync();
@@ -201,7 +201,7 @@ public class SaleRepositoryTests : IDisposable
         var sale1 = Sale.Create(customer, branch1);
         var sale2 = Sale.Create(customer, branch1);
         var sale3 = Sale.Create(customer, branch2);
-        
+
         await _repository.CreateAsync(sale1);
         await _repository.CreateAsync(sale2);
         await _repository.CreateAsync(sale3);
@@ -231,7 +231,7 @@ public class SaleRepositoryTests : IDisposable
         var sale1 = Sale.Create(customer, branch, saleDate: baseDate.AddDays(-2));
         var sale2 = Sale.Create(customer, branch, saleDate: baseDate);
         var sale3 = Sale.Create(customer, branch, saleDate: baseDate.AddDays(2));
-        
+
         await _repository.CreateAsync(sale1);
         await _repository.CreateAsync(sale2);
         await _repository.CreateAsync(sale3);
@@ -267,7 +267,7 @@ public class SaleRepositoryTests : IDisposable
 
         // Assert
         result.IsCancelled.Should().BeTrue();
-        
+
         var savedSale = await _repository.GetByIdAsync(sale.Id);
         savedSale!.IsCancelled.Should().BeTrue();
     }
@@ -293,7 +293,7 @@ public class SaleRepositoryTests : IDisposable
 
         // Assert
         result.Should().BeTrue();
-        
+
         var deletedSale = await _repository.GetByIdAsync(sale.Id);
         deletedSale.Should().BeNull();
     }
@@ -330,7 +330,7 @@ public class SaleRepositoryTests : IDisposable
         var sale1 = Sale.Create(customer, branch);
         var sale2 = Sale.Create(customer, branch);
         var sale3 = Sale.Create(customer, branch);
-        
+
         await _repository.CreateAsync(sale1);
         await _repository.CreateAsync(sale2);
         await _repository.CreateAsync(sale3);
@@ -380,7 +380,7 @@ public class SaleRepositoryTests : IDisposable
         var customer = CustomerTestData.GenerateValidCustomer();
         var branch = BranchTestData.GenerateValidBranch();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         await _context.Customers.AddAsync(customer);
         await _context.Branches.AddAsync(branch);
         await _context.Products.AddAsync(product);

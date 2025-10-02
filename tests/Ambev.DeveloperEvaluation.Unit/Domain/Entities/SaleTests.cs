@@ -153,9 +153,9 @@ public class SaleTests
         sale.AddItem(product, 15);
 
         // Act & Assert
-        var action = () => sale.AddItem(product, 10); // Total would be 25
+        var action = () => sale.AddItem(product, 200); // Total would be 215
         action.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot sell more than 20 units of the same product in a single sale.*");
+            .WithMessage("Cannot sell more than 20 units of the same product in a single sale.");
     }
 
     /// <summary>

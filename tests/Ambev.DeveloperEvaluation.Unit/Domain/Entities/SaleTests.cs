@@ -149,7 +149,7 @@ public class SaleTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         sale.AddItem(product, 15);
 
         // Act & Assert
@@ -211,10 +211,10 @@ public class SaleTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Add a single item with 10 units
         sale.AddItem(product, 10);
-        
+
         var itemId = sale.Items.First().Id;
 
         // Act & Assert - Try to update the item to 21 units (exceeding the 20-unit limit)
@@ -311,10 +311,10 @@ public class SaleTests
         var sale = SaleTestData.GenerateValidSale();
         var product1 = ProductTestData.GenerateValidProduct();
         var product2 = ProductTestData.GenerateValidProduct();
-        
+
         sale.AddItem(product1, 5);
         sale.AddItem(product2, 3);
-        
+
         var firstItemId = sale.Items.First().Id;
         sale.RemoveItem(firstItemId);
 
@@ -446,11 +446,11 @@ public class SaleTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Manually create items that exceed the limit (bypassing the business rule check in AddItem)
         var item1 = SaleItem.Create(sale.Id, product, 12);
         var item2 = SaleItem.Create(sale.Id, product, 10);
-        
+
         sale.Items.Add(item1);
         sale.Items.Add(item2);
 

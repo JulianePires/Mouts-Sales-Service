@@ -59,8 +59,8 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         {
             // Restore product stock
             await _productRepository.UpdateStockAsync(
-                item.Product.Id, 
-                item.Product.StockQuantity + item.Quantity, 
+                item.Product.Id,
+                item.Product.StockQuantity + item.Quantity,
                 cancellationToken);
 
             // Mark item as cancelled

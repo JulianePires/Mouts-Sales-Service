@@ -34,13 +34,13 @@ public class GetSalesHandler : IRequestHandler<GetSalesCommand, GetSalesResult>
         // Validate pagination parameters
         if (request.PageNumber <= 0)
             throw new ArgumentException("Page number must be greater than 0.", nameof(request.PageNumber));
-        
+
         if (request.PageSize <= 0 || request.PageSize > 100)
             throw new ArgumentException("Page size must be between 1 and 100.", nameof(request.PageSize));
 
         // Get total count for pagination
         var totalCount = await _saleRepository.GetCountAsync(cancellationToken);
-        
+
         // Calculate pagination metadata
         var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
         var hasPrevious = request.PageNumber > 1;
@@ -48,20 +48,20 @@ public class GetSalesHandler : IRequestHandler<GetSalesCommand, GetSalesResult>
 
         // Get paginated sales
         var sales = await _saleRepository.GetPaginatedAsync(request.PageNumber, request.PageSize, cancellationToken);
-        
+
         // Filter sales if necessary (note: this could be optimized by implementing filtering in the repository)
         if (request.CustomerId.HasValue)
             sales = sales.Where(s => s.CustomerId == request.CustomerId.Value);
-            
+
         if (request.BranchId.HasValue)
             sales = sales.Where(s => s.BranchId == request.BranchId.Value);
-            
+
         if (request.IsCancelled.HasValue)
             sales = sales.Where(s => s.IsCancelled == request.IsCancelled.Value);
-            
+
         if (request.StartDate.HasValue)
             sales = sales.Where(s => s.SaleDate >= request.StartDate.Value);
-            
+
         if (request.EndDate.HasValue)
             sales = sales.Where(s => s.SaleDate <= request.EndDate.Value);
 

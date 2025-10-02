@@ -26,7 +26,7 @@ public class GetSalesHandlerTests
     {
         _saleRepository = Substitute.For<ISaleRepository>();
         _mapper = Substitute.For<IMapper>();
-        
+
         _handler = new GetSalesHandler(_saleRepository, _mapper);
     }
 

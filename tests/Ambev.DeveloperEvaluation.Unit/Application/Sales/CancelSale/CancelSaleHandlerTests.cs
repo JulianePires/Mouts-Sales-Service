@@ -56,7 +56,7 @@ public class CancelSaleHandlerTests
         Assert.NotNull(result);
         Assert.Equal(saleId, result.Id);
         Assert.True(result.IsCancelled);
-        
+
         await _saleRepository.Received(1).UpdateAsync(sale, Arg.Any<CancellationToken>());
     }
 
@@ -76,7 +76,7 @@ public class CancelSaleHandlerTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
             () => _handler.Handle(command, CancellationToken.None));
-        
+
         Assert.Contains($"Sale with ID {saleId} not found", exception.Message);
         await _saleRepository.Received(1).GetByIdAsync(saleId, Arg.Any<CancellationToken>());
         await _saleRepository.DidNotReceive().UpdateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>());
@@ -101,7 +101,7 @@ public class CancelSaleHandlerTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
-        
+
         Assert.Contains($"Sale {sale.SaleNumber} is already cancelled", exception.Message);
         await _saleRepository.Received(1).GetByIdAsync(saleId, Arg.Any<CancellationToken>());
         await _saleRepository.DidNotReceive().UpdateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>());
@@ -119,7 +119,7 @@ public class CancelSaleHandlerTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
-        
+
         Assert.Contains("Sale ID cannot be empty", exception.Message);
         await _saleRepository.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }

@@ -12,7 +12,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Services;
 /// </summary>
 public class QuantityDiscountService : IDiscountService
 {
-
     /// <summary>
     /// Calculates the discount based on quantity and unit price.
     /// </summary>
@@ -21,27 +20,22 @@ public class QuantityDiscountService : IDiscountService
     /// <returns>The calculated discount</returns>
     public Discount CalculateDiscount(int quantity, decimal unitPrice)
     {
-        // Merged all validations in one place
-        if (quantity <= 0 || quantity > BusinessConstants.MaximumQuantityPerProduct)
-            throw new DomainException(quantity <= 0
-                ? "Quantidade deve ser maior que zero"
-                : $"Não é possível vender mais de {BusinessConstants.MaximumQuantityPerProduct} itens idênticos");
-
-        if (unitPrice <= 0 || unitPrice > BusinessConstants.MaximumUnitPrice)
-            throw new DomainException(unitPrice <= 0
-                ? "Preço unitário deve ser maior que zero"
-                : "Preço unitário excede o limite máximo permitido");
+        // Reuse existing validation methods
+        ValidateQuantityLimits(quantity);
+        ValidateUnitPrice(unitPrice);
 
         var subtotal = quantity * unitPrice;
 
-        // Single switch for all discount logic (includes "no-discount" tier)
-        return quantity switch
-        {
-            < BusinessConstants.MinimumDiscountQuantity => Discount.None,
-            < BusinessConstants.MediumDiscountQuantity => Discount.FromPercentage(BusinessConstants.LowTierDiscountPercentage, subtotal),
-            <= BusinessConstants.MaximumQuantityPerProduct => Discount.FromPercentage(BusinessConstants.HighTierDiscountPercentage, subtotal),
-            _ => throw new DomainException($"Quantidade {quantity} está fora dos limites permitidos")
-        };
+        // Reuse eligibility check
+        if (!IsEligibleForDiscount(quantity))
+            return Discount.None;
+
+        // Compute tiered discount
+        var discountPercentage = quantity < BusinessConstants.MediumDiscountQuantity
+            ? BusinessConstants.LowTierDiscountPercentage
+            : BusinessConstants.HighTierDiscountPercentage;
+
+        return Discount.FromPercentage(discountPercentage, subtotal);
     }
 
     /// <summary>
@@ -55,6 +49,20 @@ public class QuantityDiscountService : IDiscountService
 
         if (quantity > BusinessConstants.MaximumQuantityPerProduct)
             throw new DomainException($"Não é possível vender mais de {BusinessConstants.MaximumQuantityPerProduct} itens idênticos");
+    }
+
+    /// <summary>
+    /// Validates unit price according to business rules.
+    /// </summary>
+    /// <param name="unitPrice">The unit price to validate</param>
+    /// <exception cref="DomainException">Thrown when unit price is invalid</exception>
+    private void ValidateUnitPrice(decimal unitPrice)
+    {
+        if (unitPrice <= 0)
+            throw new DomainException("Preço unitário deve ser maior que zero");
+
+        if (unitPrice > BusinessConstants.MaximumUnitPrice)
+            throw new DomainException("Preço unitário excede o limite máximo permitido");
     }
 
     /// <summary>

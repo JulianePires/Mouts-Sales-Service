@@ -189,20 +189,16 @@ public class Customer : BaseEntity, ICustomer
     public void UpdateInfo(string? name = null, string? email = null, string? phone = null, string? address = null, DateTime? birthDate = null)
     {
         if (name != null)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Customer name cannot be null or empty.", nameof(name));
-            Name = name.Trim();
-        }
+            Name = StringGuards.CleanAndValidate(name, nameof(name), forbidEmpty: true);
 
         if (email != null)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                throw new ArgumentException("Customer email cannot be null or empty.", nameof(email));
-            if (!IsValidEmail(email))
-                throw new ArgumentException("Invalid email format.", nameof(email));
-            Email = email.Trim().ToLowerInvariant();
-        }
+            Email = StringGuards.CleanAndValidate(
+                email,
+                nameof(email),
+                forbidEmpty: true,
+                validator: IsValidEmail,
+                invalidMessage: "Invalid email format.")
+                .ToLowerInvariant();
 
         if (phone != null)
             Phone = phone.Trim();
@@ -211,7 +207,7 @@ public class Customer : BaseEntity, ICustomer
             Address = address.Trim();
 
         if (birthDate.HasValue)
-            BirthDate = birthDate;
+            BirthDate = birthDate.Value;
 
         UpdatedAt = DateTime.UtcNow;
     }

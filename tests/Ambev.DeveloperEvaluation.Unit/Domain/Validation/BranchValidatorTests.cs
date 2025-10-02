@@ -161,10 +161,10 @@ public class BranchValidatorTests
     }
 
     /// <summary>
-    /// Tests that validation passes when email is empty (optional field).
+    /// Tests that validation fails when email is empty (required field).
     /// </summary>
-    [Fact(DisplayName = "Empty email should pass validation")]
-    public void Given_EmptyEmail_When_Validated_Then_ShouldNotHaveError()
+    [Fact(DisplayName = "Empty email should fail validation")]
+    public void Given_EmptyEmail_When_Validated_Then_ShouldHaveError()
     {
         // Arrange
         var branch = BranchTestData.GenerateValidBranch();
@@ -174,7 +174,7 @@ public class BranchValidatorTests
         var result = _validator.TestValidate(branch);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(b => b.Email);
+        result.ShouldHaveValidationErrorFor(b => b.Email);
     }
 
     /// <summary>

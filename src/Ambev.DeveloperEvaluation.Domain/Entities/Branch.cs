@@ -171,33 +171,46 @@ public class Branch : BaseEntity, IBranch
     public void UpdateInfo(string? name = null, string? address = null, string? phone = null, string? email = null, string? manager = null)
     {
         if (name != null)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Branch name cannot be null or empty.", nameof(name));
-            Name = name.Trim();
-        }
+            Name = name.TrimRequired(nameof(name), "Branch");
 
         if (address != null)
-        {
-            if (string.IsNullOrWhiteSpace(address))
-                throw new ArgumentException("Branch address cannot be null or empty.", nameof(address));
-            Address = address.Trim();
-        }
+            Address = address.TrimRequired(nameof(address), "Branch");
 
         if (phone != null)
-            Phone = phone.Trim();
+            Phone = phone.TrimRequired(nameof(phone), "Branch");
 
         if (email != null)
-            Email = email.Trim();
+            Email = StringGuards.CleanAndValidate(
+                email,
+                nameof(email),
+                forbidEmpty: true,
+                validator: IsValidEmail,
+                invalidMessage: "Branch email format is invalid.");
 
         if (manager != null)
-        {
-            if (string.IsNullOrWhiteSpace(manager))
-                throw new ArgumentException("Branch manager cannot be null or empty.", nameof(manager));
-            Manager = manager.Trim();
-        }
+            Manager = manager.TrimRequired(nameof(manager), "Branch");
 
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Validates email format using MailAddress validation.
+    /// </summary>
+    /// <param name="email">The email to validate.</param>
+    /// <returns>True if the email format is valid; otherwise, false.</returns>
+    private static bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>

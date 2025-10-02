@@ -160,38 +160,6 @@ public class Customer : BaseEntity, ICustomer
     }
 
     /// <summary>
-    /// Updates the customer information.
-    /// </summary>
-    /// <param name="name">The new customer name.</param>
-    /// <param name="email">The new customer email.</param>
-    /// <param name="phone">The new customer phone number.</param>
-    /// <param name="address">The new customer address.</param>
-    /// <param name="birthDate">The new customer birth date.</param>
-    public void UpdateInfo(string? name = null, string? email = null, string? phone = null, string? address = null, DateTime? birthDate = null)
-    {
-        if (!string.IsNullOrWhiteSpace(name))
-            Name = name.Trim();
-
-        if (!string.IsNullOrWhiteSpace(email))
-        {
-            if (!IsValidEmail(email))
-                throw new ArgumentException("Invalid email format.", nameof(email));
-            Email = email.Trim().ToLowerInvariant();
-        }
-
-        if (phone != null)
-            Phone = phone.Trim();
-
-        if (address != null)
-            Address = address.Trim();
-
-        if (birthDate.HasValue)
-            BirthDate = birthDate.Value;
-
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    /// <summary>
     /// Calculates the customer's age based on birth date.
     /// </summary>
     /// <returns>The customer's age in years, or null if birth date is not set.</returns>
@@ -207,16 +175,6 @@ public class Customer : BaseEntity, ICustomer
             age--;
 
         return age;
-    }
-
-    /// <summary>
-    /// Checks if the customer is of legal drinking age (18 years or older).
-    /// </summary>
-    /// <returns>True if the customer is 18 or older; false if younger or birth date is not set.</returns>
-    public bool IsOfLegalAge()
-    {
-        var age = GetAge();
-        return age.HasValue && age.Value >= 18;
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.SaleItems;
 /// Controller for managing sale items
 /// </summary>
 [ApiController]
-[Route("api/sales/{saleId}/items")]
+[Route("api/Sales/{saleId}/items")]
 public class SaleItemsController : BaseController
 {
     /// <summary>

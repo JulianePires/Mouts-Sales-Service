@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using MediatR;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.GetProduct;
@@ -14,7 +12,7 @@ using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
 [ApiController]
-[Route("api/Products")]
+[Route("api/products")]
 public class ProductsController : BaseController
 {
     [HttpPost]

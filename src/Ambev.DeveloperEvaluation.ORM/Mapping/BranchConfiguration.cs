@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.ORM.Seeds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -49,6 +50,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
                 .IsUnique();
 
             builder.HasIndex(b => b.Name);
+
+            // Seed data
+            BranchSeed.Configure(builder);
         }
     }
 }

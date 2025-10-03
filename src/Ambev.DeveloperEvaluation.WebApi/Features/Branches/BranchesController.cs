@@ -8,7 +8,7 @@ using Ambev.DeveloperEvaluation.Application.Branches.GetBranch;
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Branches;
 
 [ApiController]
-[Route("api/Branches")]
+[Route("api/branches")]
 public class BranchesController : BaseController
 {
     [HttpPost]

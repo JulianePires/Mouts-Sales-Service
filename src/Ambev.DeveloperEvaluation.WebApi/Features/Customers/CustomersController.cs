@@ -14,7 +14,7 @@ using Ambev.DeveloperEvaluation.Application.Customers.DeleteCustomer;
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Customers;
 
 [ApiController]
-[Route("api/Customers")]
+[Route("api/customers")]
 public class CustomersController : BaseController
 {
     [HttpPost]

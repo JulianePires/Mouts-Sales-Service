@@ -19,23 +19,16 @@ public class AddSaleItemHandlerTests
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IMapper _mapper;
     private readonly AddSaleItemHandler _handler;
 
-    /// <summary>
-    /// Initializes a new instance of AddSaleItemHandlerTests.
-    /// Sets up test dependencies and creates the handler instance.
-    /// </summary>
     public AddSaleItemHandlerTests()
     {
         _saleRepository = Substitute.For<ISaleRepository>();
         _productRepository = Substitute.For<IProductRepository>();
-        _mapper = Substitute.For<IMapper>();
 
         _handler = new AddSaleItemHandler(
             _saleRepository,
-            _productRepository,
-            _mapper);
+            _productRepository);
     }
 
     /// <summary>
@@ -251,5 +244,46 @@ public class AddSaleItemHandlerTests
         Assert.NotNull(result);
         Assert.Equal(20m, result.DiscountPercent); // 10+ units should get 20% discount
         Assert.True(result.TotalPrice < (command.Quantity * product.Price)); // Should be discounted
+    }
+
+    /// <summary>
+    /// Tests that InvalidOperationException is thrown when trying to add more than 20 different products.
+    /// </summary>
+    [Fact(DisplayName = "Handle should throw InvalidOperationException when exceeding 20 different products limit")]
+    public async Task Handle_ExceedsMaximumDifferentProducts_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var command = new AddSaleItemCommand
+        {
+            SaleId = Guid.NewGuid(),
+            ProductId = Guid.NewGuid(),
+            Quantity = 1
+        };
+
+        var sale = SaleTestData.GenerateValidSale();
+        sale.Id = command.SaleId;
+        sale.Items.Clear();
+
+        // Add 20 different products to the sale
+        for (int i = 0; i < 20; i++)
+        {
+            var product = ProductTestData.GenerateValidProduct();
+            product.Id = Guid.NewGuid();
+            sale.AddItem(product, 1);
+        }
+
+        var newProduct = ProductTestData.GenerateValidProduct();
+        newProduct.Id = command.ProductId;
+        newProduct.StockQuantity = 100;
+
+        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
+            .Returns(sale);
+        _productRepository.GetByIdAsync(command.ProductId, Arg.Any<CancellationToken>())
+            .Returns(newProduct);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _handler.Handle(command, CancellationToken.None));
+        Assert.Contains("Cannot add more than 20 different products", exception.Message);
     }
 }

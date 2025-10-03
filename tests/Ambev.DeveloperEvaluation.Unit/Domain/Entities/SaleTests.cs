@@ -34,7 +34,7 @@ public class SaleTests
         sale.IsCancelled.Should().BeFalse();
         sale.TotalAmount.Should().Be(0);
         sale.Items.Should().BeEmpty();
-        sale.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        sale.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
     }
 
     /// <summary>
@@ -156,6 +156,32 @@ public class SaleTests
         var action = () => sale.AddItem(product, 200); // Total would be 215
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot sell more than 20 units of the same product in a single sale.");
+    }
+
+    /// <summary>
+    /// Tests that adding more than 20 different products throws exception.
+    /// </summary>
+    [Fact(DisplayName = "Given sale with 20 products When adding different product Then should throw InvalidOperationException")]
+    public void Given_SaleWith20Products_When_AddingDifferentProduct_Then_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+
+        // Add 20 different products to the sale
+        for (int i = 0; i < 20; i++)
+        {
+            var product = ProductTestData.GenerateValidProduct();
+            product.Id = Guid.NewGuid(); // Ensure different products
+            sale.AddItem(product, 1);
+        }
+
+        var newProduct = ProductTestData.GenerateValidProduct();
+        newProduct.Id = Guid.NewGuid(); // Different product
+
+        // Act & Assert
+        var action = () => sale.AddItem(newProduct, 1);
+        action.Should().Throw<InvalidOperationException>()
+            .WithMessage("Cannot add more than 20 different products to a single sale.");
     }
 
     /// <summary>

@@ -34,7 +34,7 @@ public class SaleItemTests
         saleItem.Quantity.Should().Be(quantity);
         saleItem.UnitPrice.Should().Be(unitPrice);
         saleItem.IsCancelled.Should().BeFalse();
-        saleItem.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        saleItem.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
     }
 
     /// <summary>

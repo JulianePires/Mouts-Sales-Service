@@ -1,10 +1,10 @@
 using FluentValidation;
 using NSubstitute;
 using Xunit;
-using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Sales.AddSaleItem;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using SaleTestData = Ambev.DeveloperEvaluation.Unit.Application.Sales.TestData.SaleTestData;
 
@@ -19,16 +19,18 @@ public class AddSaleItemHandlerTests
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
+    private readonly ISaleService _saleService;
     private readonly AddSaleItemHandler _handler;
 
     public AddSaleItemHandlerTests()
     {
         _saleRepository = Substitute.For<ISaleRepository>();
         _productRepository = Substitute.For<IProductRepository>();
-
+        _saleService = Substitute.For<ISaleService>();
         _handler = new AddSaleItemHandler(
-            _saleRepository,
-            _productRepository);
+            _saleService,
+            _productRepository,
+            _saleRepository);
     }
 
     /// <summary>
@@ -55,7 +57,7 @@ public class AddSaleItemHandlerTests
         product.StockQuantity = 100;
         product.Price = 10.00m;
 
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
             .Returns(sale);
         _productRepository.GetByIdAsync(command.ProductId, Arg.Any<CancellationToken>())
             .Returns(product);
@@ -109,8 +111,8 @@ public class AddSaleItemHandlerTests
             Quantity = 5
         };
 
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
-            .Returns((Sale?)null);
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<Sale>(new ArgumentException("Sale with ID not found")));
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(
@@ -133,17 +135,13 @@ public class AddSaleItemHandlerTests
             Quantity = 5
         };
 
-        var sale = SaleTestData.GenerateValidSale();
-        sale.Id = command.SaleId;
-        sale.IsCancelled = true;
-
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
-            .Returns(sale);
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<Sale>(new InvalidOperationException("Cannot work with a cancelled sale")));
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
-        Assert.Contains("Cannot add items to a cancelled sale", exception.Message);
+        Assert.Contains("Cannot work with a cancelled sale", exception.Message);
     }
 
     /// <summary>
@@ -163,7 +161,7 @@ public class AddSaleItemHandlerTests
         var sale = SaleTestData.GenerateValidSale();
         sale.Id = command.SaleId;
 
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
             .Returns(sale);
         _productRepository.GetByIdAsync(command.ProductId, Arg.Any<CancellationToken>())
             .Returns((Product?)null);
@@ -196,7 +194,7 @@ public class AddSaleItemHandlerTests
         product.Id = command.ProductId;
         product.StockQuantity = 5; // Less than requested quantity
 
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
             .Returns(sale);
         _productRepository.GetByIdAsync(command.ProductId, Arg.Any<CancellationToken>())
             .Returns(product);
@@ -230,7 +228,7 @@ public class AddSaleItemHandlerTests
         product.StockQuantity = 100;
         product.Price = 10.00m;
 
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
             .Returns(sale);
         _productRepository.GetByIdAsync(command.ProductId, Arg.Any<CancellationToken>())
             .Returns(product);
@@ -276,7 +274,7 @@ public class AddSaleItemHandlerTests
         newProduct.Id = command.ProductId;
         newProduct.StockQuantity = 100;
 
-        _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
+        _saleService.EnsureActiveSaleAsync(command.SaleId, Arg.Any<CancellationToken>())
             .Returns(sale);
         _productRepository.GetByIdAsync(command.ProductId, Arg.Any<CancellationToken>())
             .Returns(newProduct);

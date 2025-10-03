@@ -75,7 +75,7 @@ public class UpdateSaleItemHandler : IRequestHandler<UpdateSaleItemCommand, Upda
         }
 
         await _saleRepository.UpdateAsync(sale, cancellationToken);
-        var updatedItem = sale.Items.FirstOrDefault(i => i.Id == request.ItemId);
+        var updatedItem = sale.Items.FirstOrDefault(i => i.Id == request.ItemId && !i.IsCancelled);
 
         // Return the result
         return new UpdateSaleItemResult

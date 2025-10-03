@@ -153,7 +153,7 @@ public class SaleTests
         sale.AddItem(product, 15);
 
         // Act & Assert
-        var action = () => sale.AddItem(product, 200); // Total would be 215
+        var action = () => sale.AddItem(product, 6); // Total would be 21
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot sell more than 20 units of the same product in a single sale.");
     }
@@ -220,7 +220,7 @@ public class SaleTests
         var newQuantity = 8;
 
         // Act
-        sale.UpdateItemQuantity(itemId, newQuantity);
+        sale.UpdateItemQuantity(itemId, newQuantity, product);
 
         // Assert
         sale.Items.First().Quantity.Should().Be(newQuantity);
@@ -244,7 +244,7 @@ public class SaleTests
         var itemId = sale.Items.First().Id;
 
         // Act & Assert - Try to update the item to 21 units (exceeding the 20-unit limit)
-        var action = () => sale.UpdateItemQuantity(itemId, 21);
+        var action = () => sale.UpdateItemQuantity(itemId, 21, product);
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot sell more than 20 units of the same product in a single sale.*");
     }

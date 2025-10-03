@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.ORM.Seeds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -43,6 +44,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             builder.HasIndex(p => p.Name);
             builder.HasIndex(p => p.Category);
             builder.HasIndex(p => p.IsActive);
+
+            // Seed data
+            ProductSeed.Configure(builder);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.ORM.Seeds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -42,6 +43,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             // Índices
             builder.HasIndex(c => c.Email)
                 .IsUnique();
+
+            // Seed data
+            CustomerSeed.Configure(builder);
         }
     }
 }

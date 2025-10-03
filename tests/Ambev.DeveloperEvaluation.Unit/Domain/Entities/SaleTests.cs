@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using FluentAssertions;
 using Xunit;
@@ -31,7 +32,7 @@ public class SaleTests
         sale.Branch.Should().Be(branch);
         sale.SaleNumber.Should().NotBeEmpty();
         sale.SaleDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
-        sale.IsCancelled.Should().BeFalse();
+        sale.Status.Should().Be(SaleStatus.Draft);
         sale.TotalAmount.Should().Be(0);
         sale.Items.Should().BeEmpty();
         sale.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
@@ -264,7 +265,7 @@ public class SaleTests
         sale.Cancel();
 
         // Assert
-        sale.IsCancelled.Should().BeTrue();
+        sale.Status.Should().Be(SaleStatus.Cancelled);
         sale.TotalAmount.Should().Be(0);
         sale.UpdatedAt.Should().NotBeNull();
     }
@@ -286,7 +287,7 @@ public class SaleTests
         sale.Reactivate();
 
         // Assert
-        sale.IsCancelled.Should().BeFalse();
+        sale.Status.Should().Be(SaleStatus.Draft);
         sale.TotalAmount.Should().Be(originalTotal);
         sale.UpdatedAt.Should().NotBeNull();
     }
@@ -458,7 +459,7 @@ public class SaleTests
         iSale.Branch.Should().Be(sale.Branch);
         iSale.Items.Should().HaveCount(sale.Items.Count);
         iSale.TotalAmount.Should().Be(sale.TotalAmount);
-        iSale.IsCancelled.Should().Be(sale.IsCancelled);
+        iSale.IsCancelled.Should().Be(sale.Status == SaleStatus.Cancelled);
         iSale.CreatedAt.Should().Be(sale.CreatedAt);
         iSale.UpdatedAt.Should().Be(sale.UpdatedAt);
     }

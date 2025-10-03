@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
@@ -45,12 +45,11 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         if (sale == null)
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found.");
 
-        if (sale.IsCancelled)
+        if (sale.Status == SaleStatus.Cancelled)
             throw new InvalidOperationException($"Sale {sale.SaleNumber} is already cancelled.");
 
-        // Cancel the sale and all its items
-        sale.IsCancelled = true;
-        sale.UpdatedAt = DateTime.UtcNow;
+        // Cancel the sale using domain method
+        sale.Cancel();
 
         var cancelledItemsCount = 0;
 
@@ -75,7 +74,7 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         {
             Id = sale.Id,
             SaleNumber = sale.SaleNumber,
-            IsCancelled = sale.IsCancelled,
+            IsCancelled = sale.Status == SaleStatus.Cancelled,
             TotalAmount = sale.TotalAmount,
             CancelledItemsCount = cancelledItemsCount,
             CancelledAt = sale.UpdatedAt ?? DateTime.UtcNow,

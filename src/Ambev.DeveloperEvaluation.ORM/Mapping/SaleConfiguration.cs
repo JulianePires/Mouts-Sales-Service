@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,9 +35,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0);
 
-            builder.Property(s => s.IsCancelled)
+            builder.Property(s => s.Status)
                 .IsRequired()
-                .HasDefaultValue(false);
+                .HasConversion<string>()
+                .HasDefaultValue(SaleStatus.Draft);
 
             builder.Property(s => s.CreatedAt)
                 .IsRequired();

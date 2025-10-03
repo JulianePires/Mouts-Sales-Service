@@ -3,6 +3,7 @@ using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Services;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
@@ -77,7 +78,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
             CustomerId = request.CustomerId,
             BranchId = request.BranchId,
             CreatedAt = DateTime.UtcNow,
-            IsCancelled = false
+            Status = SaleStatus.Draft
         };
 
         // Process sale items

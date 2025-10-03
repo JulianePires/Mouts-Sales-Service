@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 
@@ -32,7 +33,7 @@ public class SaleService : ISaleService
             throw new ArgumentException($"Sale with ID {saleId} not found.", nameof(saleId));
         }
 
-        if (sale.IsCancelled)
+        if (sale.Status == SaleStatus.Cancelled)
         {
             throw new InvalidOperationException("Cannot work with a cancelled sale.");
         }

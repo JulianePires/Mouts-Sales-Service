@@ -3,6 +3,7 @@ using Xunit;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 
@@ -42,7 +43,7 @@ public class CancelSaleHandlerTests
         var command = new CancelSaleCommand(saleId);
         var sale = SaleTestData.GenerateValidSale();
         sale.Id = saleId;
-        sale.IsCancelled = false;
+        sale.Status = SaleStatus.Draft;
 
         _saleRepository.GetByIdAsync(saleId, Arg.Any<CancellationToken>())
             .Returns(sale);
@@ -51,7 +52,7 @@ public class CancelSaleHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.True(sale.IsCancelled);
+        Assert.Equal(SaleStatus.Cancelled, sale.Status);
         Assert.Equal(0, sale.TotalAmount);
         Assert.NotNull(result);
         Assert.Equal(saleId, result.Id);
@@ -93,7 +94,7 @@ public class CancelSaleHandlerTests
         var command = new CancelSaleCommand(saleId);
         var sale = SaleTestData.GenerateValidSale();
         sale.Id = saleId;
-        sale.IsCancelled = true; // Already cancelled
+        sale.Status = SaleStatus.Cancelled; // Already cancelled
 
         _saleRepository.GetByIdAsync(saleId, Arg.Any<CancellationToken>())
             .Returns(sale);

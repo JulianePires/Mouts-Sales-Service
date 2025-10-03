@@ -156,14 +156,18 @@ podman compose up --build
 
 ```bash
 # Restaurar dependências
-dotnet restore
+dotnet restore *.sln
 
 # Executar testes
-dotnet test
+dotnet test *.sln
 
 # Executar a aplicação
 cd src/Ambev.DeveloperEvaluation.WebApi
 dotnet run
+
+ou
+
+dotnet run --project src/Ambev.DeveloperEvaluation.WebApi/Ambev.DeveloperEvaluation.WebApi.csproj --urls "http://localhost:5001"
 ```
 
 ## 🗄️ Banco de Dados
@@ -195,7 +199,7 @@ dotnet ef migrations list
 
 ```bash
 # Executar todos os testes
-dotnet test
+dotnet test *.sln
 
 # Executar testes específicos
 dotnet test --filter "SaleRepositoryTests"
@@ -261,11 +265,9 @@ dotnet test --filter "SaleRepositoryTests"
 - [x] Implementar casos de uso na camada Application
 - [x] Criar controllers na WebApi
 - [x] Adicionar validações de negócio
-- [ ] Implementar autenticação JWT
-- [ ] Configurar logging estruturado
-- [ ] Adicionar métricas e monitoramento
+- [x] Adicionar Event Handler com Mensageria
 - [ ] Implementar cache com Redis
-- [ ] Criar documentação da API
+- [x] Criar documentação da API
 
 ## 🤝 Contribuição
 

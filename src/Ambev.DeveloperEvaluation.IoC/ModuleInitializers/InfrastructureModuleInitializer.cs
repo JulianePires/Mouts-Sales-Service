@@ -1,10 +1,14 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Common.Services;
+using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Application.EventHandlers;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.ORM;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace Ambev.DeveloperEvaluation.IoC.ModuleInitializers;
@@ -23,6 +27,41 @@ public class InfrastructureModuleInitializer : IModuleInitializer
 
         // Register application services
         builder.Services.AddScoped<ISaleService, Ambev.DeveloperEvaluation.Application.Common.Services.SaleService>();
+
+        // Register event services
+        builder.Services.AddSingleton<IEventPublisher, AzureServiceBusEventPublisher>();
+        builder.Services.AddScoped<ICacheService, RedisCacheService>();
+        builder.Services.AddScoped<IDomainEventService, DomainEventService>();
+
+        // Register event handlers
+        builder.Services.AddScoped<IDomainEventHandler<SaleCreated>, SaleCreatedEventHandler>();
+        builder.Services.AddScoped<IDomainEventHandler<SaleModified>, SaleModifiedEventHandler>();
+        builder.Services.AddScoped<IDomainEventHandler<SaleCancelled>, SaleCancelledEventHandler>();
+        builder.Services.AddScoped<IDomainEventHandler<ItemCancelled>, ItemCancelledEventHandler>();
+
+        // Register Redis caching (if connection string is provided)
+        var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+        if (!string.IsNullOrEmpty(redisConnectionString))
+        {
+            try
+            {
+                builder.Services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = redisConnectionString;
+                    options.InstanceName = builder.Configuration["Redis:InstanceName"] ?? "AmbevDeveloperEvaluation";
+                });
+            }
+            catch
+            {
+                // If Redis is not available, fall back to in-memory cache
+                builder.Services.AddMemoryCache();
+            }
+        }
+        else
+        {
+            // Fall back to in-memory cache if Redis is not configured
+            builder.Services.AddMemoryCache();
+        }
     }
 
     /// <summary>

@@ -155,7 +155,7 @@ public class Sale : BaseEntity, ISale
     /// <param name="saleDate">Optional sale date (current date if null).</param>
     /// <returns>A new Sale instance.</returns>
     /// <exception cref="ArgumentException">Thrown when required parameters are null.</exception>
-    public static Sale Create(Customer customer, Branch branch, string? saleNumber = null, DateTime? saleDate = null)
+    public static Sale Create(Customer customer, Branch branch, string saleNumber, DateTime? saleDate = null)
     {
         if (customer == null)
             throw new ArgumentException("Customer cannot be null.", nameof(customer));
@@ -173,7 +173,7 @@ public class Sale : BaseEntity, ISale
         {
             Customer = customer,
             Branch = branch,
-            SaleNumber = saleNumber ?? GenerateSaleNumber(),
+            SaleNumber = saleNumber,
             SaleDate = saleDate ?? DateTime.UtcNow
         };
     }
@@ -185,8 +185,9 @@ public class Sale : BaseEntity, ISale
     /// <param name="product">The product to add.</param>
     /// <param name="quantity">The quantity to add.</param>
     /// <param name="unitPrice">Optional unit price (uses product price if null).</param>
+    /// <returns>The created SaleItem.</returns>
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled or business rules are violated.</exception>
-    public void AddItem(Product product, int quantity, decimal? unitPrice = null)
+    public SaleItem AddItem(Product product, int quantity, decimal? unitPrice = null)
     {
         if (IsCancelled)
             throw new InvalidOperationException("Cannot add items to a cancelled sale.");
@@ -197,7 +198,7 @@ public class Sale : BaseEntity, ISale
         if (!product.IsAvailableForSale())
             throw new InvalidOperationException("Product is not available for sale.");
 
-        // Check if adding this quantity would exceed the 20-unit limit for this product
+        // Business Rule: Check if adding this quantity would exceed the 20-unit limit for this product
         var existingQuantity = Items
             .Where(i => !i.IsCancelled && i.Product.Id == product.Id)
             .Sum(i => i.Quantity);
@@ -205,10 +206,27 @@ public class Sale : BaseEntity, ISale
         if (existingQuantity + quantity > 20)
             throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
 
+        // Business Rule: Check stock availability (consider total quantity including existing in sale)
+        var totalRequiredStock = existingQuantity + quantity;
+        if (product.StockQuantity < totalRequiredStock)
+            throw new InvalidOperationException($"Product '{product.Name}' is not available in the requested quantity. Available: {product.StockQuantity}, Required for sale: {totalRequiredStock}.");
+
+        // Business Rule: Check if adding this product would exceed the 20 different products limit
+        var existingProductIds = Items
+            .Where(i => !i.IsCancelled)
+            .Select(i => i.Product.Id)
+            .Distinct()
+            .Count();
+
+        var isNewProduct = !Items.Any(i => !i.IsCancelled && i.Product.Id == product.Id);
+        if (isNewProduct && existingProductIds >= 20)
+            throw new InvalidOperationException("Cannot add more than 20 different products to a single sale.");
+
         var saleItem = SaleItem.Create(Id, product, quantity, unitPrice);
         Items.Add(saleItem);
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
+        return saleItem;
     }
 
     /// <summary>
@@ -237,21 +255,29 @@ public class Sale : BaseEntity, ISale
     /// </summary>
     /// <param name="itemId">The ID of the item to update.</param>
     /// <param name="newQuantity">The new quantity for the item.</param>
+    /// <param name="product">The product to validate stock against.</param>
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled, item not found, or business rules violated.</exception>
-    public void UpdateItemQuantity(Guid itemId, int newQuantity)
+    public void UpdateItemQuantity(Guid itemId, int newQuantity, Product product)
     {
         if (IsCancelled)
             throw new InvalidOperationException("Cannot update items in a cancelled sale.");
 
-        var item = Items.FirstOrDefault(i => i.Id == itemId);
+        var item = Items.FirstOrDefault(i => i.Id == itemId && !i.IsCancelled);
         if (item == null)
             throw new ArgumentException("Item not found in sale.", nameof(itemId));
 
-        // Check if updating this quantity would exceed the 20-unit limit for this product
+        // Business Rule: Check stock availability considering total quantity of this product in the sale
         var otherItemsQuantity = Items
-            .Where(i => !i.IsCancelled && i.Product.Id == item.Product.Id && i.Id != itemId)
+            .Where(i => !i.IsCancelled && i.Product.Id == product.Id && i.Id != itemId)
             .Sum(i => i.Quantity);
 
+        var totalRequiredStock = otherItemsQuantity + newQuantity;
+        if (product.StockQuantity < totalRequiredStock)
+        {
+            throw new InvalidOperationException($"Product '{product.Name}' does not have sufficient stock for this update. Available: {product.StockQuantity}, Required for sale: {totalRequiredStock}.");
+        }
+
+        // Business Rule: Check if updating this quantity would exceed the 20-unit limit for this product
         if (otherItemsQuantity + newQuantity > 20)
             throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
 
@@ -348,17 +374,6 @@ public class Sale : BaseEntity, ISale
         TotalAmount = Items
             .Where(i => !i.IsCancelled)
             .Sum(i => i.TotalPrice);
-    }
-
-    /// <summary>
-    /// Generates a unique sale number with timestamp and random component.
-    /// </summary>
-    /// <returns>A unique sale number.</returns>
-    private static string GenerateSaleNumber()
-    {
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-        var random = new Random().Next(100, 999);
-        return $"SALE-{timestamp}-{random}";
     }
 
     /// <summary>

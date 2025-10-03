@@ -28,7 +28,7 @@ public static class ProductTestData
         .RuleFor(p => p.Description, f => f.Commerce.ProductDescription())
         .RuleFor(p => p.Category, f => f.Commerce.Categories(1)[0])
         .RuleFor(p => p.Image, f => f.Image.PicsumUrl())
-        .RuleFor(p => p.StockQuantity, f => f.Random.Int(0, 100))
+        .RuleFor(p => p.StockQuantity, f => f.Random.Int(10, 1000))
         .RuleFor(p => p.MinStockLevel, f => f.Random.Int(5, 15))
         .RuleFor(p => p.IsActive, _ => true)
         .RuleFor(p => p.CreatedAt, f => f.Date.Past(1));

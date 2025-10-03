@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Application.Common.Services;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.ORM;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +20,9 @@ public class InfrastructureModuleInitializer : IModuleInitializer
 
         // Register the discount service
         builder.Services.AddScoped<IDiscountService, QuantityDiscountService>();
+
+        // Register application services
+        builder.Services.AddScoped<ISaleService, Ambev.DeveloperEvaluation.Application.Common.Services.SaleService>();
     }
 
     /// <summary>

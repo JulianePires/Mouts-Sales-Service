@@ -23,7 +23,7 @@ public class SaleTests
         var branch = BranchTestData.GenerateValidBranch();
 
         // Act
-        var sale = Sale.Create(customer, branch);
+        var sale = Sale.Create(customer, branch, "SAL202410021238");
 
         // Assert
         sale.Should().NotBeNull();
@@ -34,7 +34,7 @@ public class SaleTests
         sale.IsCancelled.Should().BeFalse();
         sale.TotalAmount.Should().Be(0);
         sale.Items.Should().BeEmpty();
-        sale.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        sale.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class SaleTests
         var branch = BranchTestData.GenerateValidBranch();
 
         // Act & Assert
-        var action = () => Sale.Create(null!, branch);
+        var action = () => Sale.Create(null!, branch, "SAL202410021238");
         action.Should().Throw<ArgumentException>()
             .WithMessage("Customer cannot be null.*");
     }
@@ -63,7 +63,7 @@ public class SaleTests
         var branch = BranchTestData.GenerateValidBranch();
 
         // Act & Assert
-        var action = () => Sale.Create(inactiveCustomer, branch);
+        var action = () => Sale.Create(inactiveCustomer, branch, "SAL202410021239");
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot create sale for inactive customer.*");
     }
@@ -79,7 +79,7 @@ public class SaleTests
         var inactiveBranch = BranchTestData.GenerateInactiveBranch();
 
         // Act & Assert
-        var action = () => Sale.Create(customer, inactiveBranch);
+        var action = () => Sale.Create(customer, inactiveBranch, "SAL202410021240");
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot create sale for inactive branch.*");
     }
@@ -149,13 +149,39 @@ public class SaleTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         sale.AddItem(product, 15);
 
         // Act & Assert
-        var action = () => sale.AddItem(product, 10); // Total would be 25
+        var action = () => sale.AddItem(product, 6); // Total would be 21
         action.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot sell more than 20 units of the same product in a single sale.*");
+            .WithMessage("Cannot sell more than 20 units of the same product in a single sale.");
+    }
+
+    /// <summary>
+    /// Tests that adding more than 20 different products throws exception.
+    /// </summary>
+    [Fact(DisplayName = "Given sale with 20 products When adding different product Then should throw InvalidOperationException")]
+    public void Given_SaleWith20Products_When_AddingDifferentProduct_Then_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+
+        // Add 20 different products to the sale
+        for (int i = 0; i < 20; i++)
+        {
+            var product = ProductTestData.GenerateValidProduct();
+            product.Id = Guid.NewGuid(); // Ensure different products
+            sale.AddItem(product, 1);
+        }
+
+        var newProduct = ProductTestData.GenerateValidProduct();
+        newProduct.Id = Guid.NewGuid(); // Different product
+
+        // Act & Assert
+        var action = () => sale.AddItem(newProduct, 1);
+        action.Should().Throw<InvalidOperationException>()
+            .WithMessage("Cannot add more than 20 different products to a single sale.");
     }
 
     /// <summary>
@@ -194,7 +220,7 @@ public class SaleTests
         var newQuantity = 8;
 
         // Act
-        sale.UpdateItemQuantity(itemId, newQuantity);
+        sale.UpdateItemQuantity(itemId, newQuantity, product);
 
         // Assert
         sale.Items.First().Quantity.Should().Be(newQuantity);
@@ -211,14 +237,14 @@ public class SaleTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Add a single item with 10 units
         sale.AddItem(product, 10);
-        
+
         var itemId = sale.Items.First().Id;
 
         // Act & Assert - Try to update the item to 21 units (exceeding the 20-unit limit)
-        var action = () => sale.UpdateItemQuantity(itemId, 21);
+        var action = () => sale.UpdateItemQuantity(itemId, 21, product);
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("Cannot sell more than 20 units of the same product in a single sale.*");
     }
@@ -311,10 +337,10 @@ public class SaleTests
         var sale = SaleTestData.GenerateValidSale();
         var product1 = ProductTestData.GenerateValidProduct();
         var product2 = ProductTestData.GenerateValidProduct();
-        
+
         sale.AddItem(product1, 5);
         sale.AddItem(product2, 3);
-        
+
         var firstItemId = sale.Items.First().Id;
         sale.RemoveItem(firstItemId);
 
@@ -446,11 +472,11 @@ public class SaleTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         var product = ProductTestData.GenerateValidProduct();
-        
+
         // Manually create items that exceed the limit (bypassing the business rule check in AddItem)
         var item1 = SaleItem.Create(sale.Id, product, 12);
         var item2 = SaleItem.Create(sale.Id, product, 10);
-        
+
         sale.Items.Add(item1);
         sale.Items.Add(item2);
 

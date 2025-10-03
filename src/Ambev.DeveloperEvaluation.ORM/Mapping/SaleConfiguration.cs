@@ -1,4 +1,6 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.ORM.Seeds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,9 +36,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0);
 
-            builder.Property(s => s.IsCancelled)
+            builder.Property(s => s.Status)
                 .IsRequired()
-                .HasDefaultValue(false);
+                .HasConversion<string>()
+                .HasDefaultValue(SaleStatus.Draft);
 
             builder.Property(s => s.CreatedAt)
                 .IsRequired();
@@ -67,6 +70,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             builder.HasIndex(s => s.CustomerId);
             builder.HasIndex(s => s.BranchId);
             builder.HasIndex(s => s.SaleDate);
+
+            // Seed data
+            SaleSeed.Configure(builder);
         }
     }
 }

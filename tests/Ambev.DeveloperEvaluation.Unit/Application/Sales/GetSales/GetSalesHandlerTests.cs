@@ -3,6 +3,7 @@ using Xunit;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSales;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using SaleCommandTestData = Ambev.DeveloperEvaluation.Unit.Application.Sales.TestData.SaleTestData;
@@ -54,7 +55,7 @@ public class GetSalesHandlerTests
             BranchName = s.Branch.Name,
             TotalAmount = s.TotalAmount,
             ItemCount = s.Items.Count,
-            IsCancelled = s.IsCancelled,
+            IsCancelled = s.Status == SaleStatus.Cancelled,
             CreatedAt = s.CreatedAt
         }).ToList();
 

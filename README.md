@@ -259,8 +259,8 @@ dotnet test --filter "SaleRepositoryTests"
 ## 📈 Próximos Passos
 
 - [x] Implementar casos de uso na camada Application
-- [ ] Criar controllers na WebApi
-- [ ] Adicionar validações de negócio
+- [x] Criar controllers na WebApi
+- [x] Adicionar validações de negócio
 - [ ] Implementar autenticação JWT
 - [ ] Configurar logging estruturado
 - [ ] Adicionar métricas e monitoramento

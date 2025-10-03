@@ -3,6 +3,7 @@ using Xunit;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using SaleCommandTestData = Ambev.DeveloperEvaluation.Unit.Application.Sales.TestData.SaleTestData;
@@ -74,7 +75,7 @@ public class GetSaleHandlerTests
                 IsCancelled = i.IsCancelled
             }).ToList(),
             TotalAmount = sale.TotalAmount,
-            IsCancelled = sale.IsCancelled
+            IsCancelled = sale.Status == SaleStatus.Cancelled
         };
 
         _saleRepository.GetByIdAsync(saleId, Arg.Any<CancellationToken>())

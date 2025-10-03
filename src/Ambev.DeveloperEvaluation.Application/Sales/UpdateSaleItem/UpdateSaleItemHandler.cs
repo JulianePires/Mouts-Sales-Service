@@ -2,6 +2,7 @@ using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSaleItem;
 
@@ -36,7 +37,7 @@ public class UpdateSaleItemHandler : IRequestHandler<UpdateSaleItemCommand, Upda
             throw new ArgumentException($"Sale with ID {request.SaleId} not found.", nameof(request.SaleId));
         }
 
-        if (sale.IsCancelled)
+        if (sale.Status == SaleStatus.Cancelled)
         {
             throw new InvalidOperationException("Cannot update items in a cancelled sale.");
         }

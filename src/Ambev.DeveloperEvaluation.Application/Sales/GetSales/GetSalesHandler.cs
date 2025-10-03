@@ -1,6 +1,8 @@
 using AutoMapper;
 using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSales;
 
@@ -57,7 +59,7 @@ public class GetSalesHandler : IRequestHandler<GetSalesCommand, GetSalesResult>
             sales = sales.Where(s => s.BranchId == request.BranchId.Value);
 
         if (request.IsCancelled.HasValue)
-            sales = sales.Where(s => s.IsCancelled == request.IsCancelled.Value);
+            sales = sales.Where(s => (s.Status == SaleStatus.Cancelled) == request.IsCancelled.Value);
 
         if (request.StartDate.HasValue)
             sales = sales.Where(s => s.SaleDate >= request.StartDate.Value);
@@ -74,7 +76,7 @@ public class GetSalesHandler : IRequestHandler<GetSalesCommand, GetSalesResult>
             BranchName = sale.Branch?.Name ?? "Unknown",
             TotalAmount = sale.TotalAmount,
             ItemCount = sale.Items?.Count ?? 0,
-            IsCancelled = sale.IsCancelled,
+            IsCancelled = sale.Status == SaleStatus.Cancelled,
             CreatedAt = sale.CreatedAt
         }).ToList();
 

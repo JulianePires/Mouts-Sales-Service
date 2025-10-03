@@ -16,8 +16,8 @@ public class CustomerValidator : AbstractValidator<Customer>
         RuleFor(customer => customer.Name)
             .NotEmpty()
             .WithMessage("Customer name is required.")
-            .MinimumLength(2)
-            .WithMessage("Customer name must be at least 2 characters long.")
+            .MinimumLength(3)
+            .WithMessage("Customer name must be at least 3 characters long.")
             .MaximumLength(100)
             .WithMessage("Customer name cannot be longer than 100 characters.");
 

@@ -4,6 +4,7 @@ using Xunit;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Sales.RemoveSaleItem;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using SaleTestData = Ambev.DeveloperEvaluation.Unit.Application.Sales.TestData.SaleTestData;
@@ -137,7 +138,7 @@ public class RemoveSaleItemHandlerTests
 
         var sale = SaleTestData.GenerateValidSale();
         sale.Id = command.SaleId;
-        sale.IsCancelled = true;
+        sale.Status = SaleStatus.Cancelled;
 
         _saleRepository.GetByIdAsync(command.SaleId, Arg.Any<CancellationToken>())
             .Returns(sale);

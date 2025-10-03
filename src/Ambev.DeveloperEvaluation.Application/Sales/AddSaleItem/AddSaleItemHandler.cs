@@ -1,7 +1,8 @@
 using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Application.Common.Extensions;
+using Ambev.DeveloperEvaluation.Domain.Services;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.AddSaleItem;
 
@@ -10,15 +11,18 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.AddSaleItem;
 /// </summary>
 public class AddSaleItemHandler : IRequestHandler<AddSaleItemCommand, AddSaleItemResult>
 {
-    private readonly ISaleRepository _saleRepository;
+    private readonly ISaleService _saleService;
     private readonly IProductRepository _productRepository;
+    private readonly ISaleRepository _saleRepository;
 
     public AddSaleItemHandler(
-        ISaleRepository saleRepository,
-        IProductRepository productRepository)
+        ISaleService saleService,
+        IProductRepository productRepository,
+        ISaleRepository saleRepository)
     {
-        _saleRepository = saleRepository;
+        _saleService = saleService;
         _productRepository = productRepository;
+        _saleRepository = saleRepository;
     }
 
     public async Task<AddSaleItemResult> Handle(AddSaleItemCommand request, CancellationToken cancellationToken)
@@ -31,32 +35,16 @@ public class AddSaleItemHandler : IRequestHandler<AddSaleItemCommand, AddSaleIte
             throw new ValidationException(validationResult.Errors);
         }
 
-        // Get the sale
-        var sale = await _saleRepository.GetByIdAsync(request.SaleId, cancellationToken);
-        if (sale == null)
-        {
-            throw new ArgumentException($"Sale with ID {request.SaleId} not found.", nameof(request.SaleId));
-        }
-
-        if (sale.IsCancelled)
-        {
-            throw new InvalidOperationException("Cannot add items to a cancelled sale.");
-        }
-
-        var product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken);
-        if (product == null)
-        {
-            throw new ArgumentException($"Product with ID {request.ProductId} not found.", nameof(request.ProductId));
-        }
+        // Get entities using new utilities
+        var sale = await _saleService.EnsureActiveSaleAsync(request.SaleId, cancellationToken);
+        var product = await _productRepository.GetOrThrowAsync(request.ProductId, nameof(request.ProductId), cancellationToken);
 
         // Add item to sale (domain handles business rules)
-        sale.AddItem(product, request.Quantity, request.UnitPrice);
+        var newItem = sale.AddItem(product, request.Quantity, request.UnitPrice);
 
         product.RemoveStock(request.Quantity);
         await _productRepository.UpdateAsync(product, cancellationToken);
         await _saleRepository.UpdateAsync(sale, cancellationToken);
-
-        var newItem = sale.Items.Last();
         return new AddSaleItemResult
         {
             ItemId = newItem.Id,

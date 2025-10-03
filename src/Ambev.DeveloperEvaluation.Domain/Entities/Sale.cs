@@ -185,8 +185,9 @@ public class Sale : BaseEntity, ISale
     /// <param name="product">The product to add.</param>
     /// <param name="quantity">The quantity to add.</param>
     /// <param name="unitPrice">Optional unit price (uses product price if null).</param>
+    /// <returns>The created SaleItem.</returns>
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled or business rules are violated.</exception>
-    public void AddItem(Product product, int quantity, decimal? unitPrice = null)
+    public SaleItem AddItem(Product product, int quantity, decimal? unitPrice = null)
     {
         if (IsCancelled)
             throw new InvalidOperationException("Cannot add items to a cancelled sale.");
@@ -205,9 +206,10 @@ public class Sale : BaseEntity, ISale
         if (existingQuantity + quantity > 20)
             throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
 
-        // Business Rule: Check stock availability
-        if (product.StockQuantity < quantity)
-            throw new InvalidOperationException($"Product '{product.Name}' is not available in the requested quantity. Available: {product.StockQuantity}, Requested: {quantity}.");
+        // Business Rule: Check stock availability (consider total quantity including existing in sale)
+        var totalRequiredStock = existingQuantity + quantity;
+        if (product.StockQuantity < totalRequiredStock)
+            throw new InvalidOperationException($"Product '{product.Name}' is not available in the requested quantity. Available: {product.StockQuantity}, Required for sale: {totalRequiredStock}.");
 
         // Business Rule: Check if adding this product would exceed the 20 different products limit
         var existingProductIds = Items
@@ -224,6 +226,7 @@ public class Sale : BaseEntity, ISale
         Items.Add(saleItem);
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
+        return saleItem;
     }
 
     /// <summary>
@@ -252,9 +255,9 @@ public class Sale : BaseEntity, ISale
     /// </summary>
     /// <param name="itemId">The ID of the item to update.</param>
     /// <param name="newQuantity">The new quantity for the item.</param>
-    /// <param name="product">The product to validate stock against (optional for stock validation).</param>
+    /// <param name="product">The product to validate stock against.</param>
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled, item not found, or business rules violated.</exception>
-    public void UpdateItemQuantity(Guid itemId, int newQuantity, Product? product = null)
+    public void UpdateItemQuantity(Guid itemId, int newQuantity, Product product)
     {
         if (IsCancelled)
             throw new InvalidOperationException("Cannot update items in a cancelled sale.");
@@ -263,21 +266,18 @@ public class Sale : BaseEntity, ISale
         if (item == null)
             throw new ArgumentException("Item not found in sale.", nameof(itemId));
 
-        // Business Rule: If increasing quantity, check stock availability
-        if (product != null)
+        // Business Rule: Check stock availability considering total quantity of this product in the sale
+        var otherItemsQuantity = Items
+            .Where(i => !i.IsCancelled && i.Product.Id == product.Id && i.Id != itemId)
+            .Sum(i => i.Quantity);
+
+        var totalRequiredStock = otherItemsQuantity + newQuantity;
+        if (product.StockQuantity < totalRequiredStock)
         {
-            var quantityDifference = newQuantity - item.Quantity;
-            if (quantityDifference > 0 && product.StockQuantity < quantityDifference)
-            {
-                throw new InvalidOperationException($"Product '{product.Name}' does not have sufficient stock for quantity increase. Available: {product.StockQuantity}, Required: {quantityDifference}.");
-            }
+            throw new InvalidOperationException($"Product '{product.Name}' does not have sufficient stock for this update. Available: {product.StockQuantity}, Required for sale: {totalRequiredStock}.");
         }
 
         // Business Rule: Check if updating this quantity would exceed the 20-unit limit for this product
-        var otherItemsQuantity = Items
-            .Where(i => !i.IsCancelled && i.Product.Id == item.Product.Id && i.Id != itemId)
-            .Sum(i => i.Quantity);
-
         if (otherItemsQuantity + newQuantity > 20)
             throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
 

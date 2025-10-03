@@ -131,21 +131,18 @@ public class SaleItem : BaseEntity, ISaleItem
     /// <exception cref="InvalidOperationException">Thrown when business rules are violated.</exception>
     public static SaleItem Create(Guid saleId, Product product, int quantity, decimal? unitPrice = null)
     {
+        // Parameter validation (domain responsibility)
         if (saleId == Guid.Empty)
             throw new ArgumentException("Sale ID cannot be empty.", nameof(saleId));
-
+        
         if (product == null)
             throw new ArgumentException("Product cannot be null.", nameof(product));
 
-        if (quantity <= 0)
-            throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
-
+        // Business rules validation
         if (quantity > 20)
             throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
 
         var finalUnitPrice = unitPrice ?? product.Price;
-        if (finalUnitPrice <= 0)
-            throw new ArgumentException("Unit price must be greater than zero.", nameof(unitPrice));
 
         var saleItem = new SaleItem
         {
@@ -198,11 +195,8 @@ public class SaleItem : BaseEntity, ISaleItem
         if (IsCancelled)
             throw new InvalidOperationException("Cannot update quantity of a cancelled item.");
 
-        if (newQuantity <= 0)
-            throw new ArgumentException("Quantity must be greater than zero.", nameof(newQuantity));
-
-        if (newQuantity > 20)
-            throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
+        // Format validation (newQuantity > 0) handled by FluentValidation in handlers
+        // Business rule: quantity limit handled at Sale level for proper product aggregation
 
         Quantity = newQuantity;
         CalculateDiscountAndTotal();

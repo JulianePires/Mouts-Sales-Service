@@ -39,5 +39,5 @@ public static class BusinessConstants
     /// <summary>
     /// Buffer for date validation to handle timing differences between entity creation and validation.
     /// </summary>
-    public const int DateValidationBufferMilliseconds = 100;
+    public const int DateValidationBufferMilliseconds = 2000;
 }

@@ -19,22 +19,16 @@ public class UpdateSaleItemHandlerTests
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IMapper _mapper;
     private readonly UpdateSaleItemHandler _handler;
 
-    /// <summary>
-    /// Initializes a new instance of UpdateSaleItemHandlerTests.
-    /// </summary>
     public UpdateSaleItemHandlerTests()
     {
         _saleRepository = Substitute.For<ISaleRepository>();
         _productRepository = Substitute.For<IProductRepository>();
-        _mapper = Substitute.For<IMapper>();
 
         _handler = new UpdateSaleItemHandler(
             _saleRepository,
-            _productRepository,
-            _mapper);
+            _productRepository);
     }
 
     /// <summary>

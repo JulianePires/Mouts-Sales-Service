@@ -197,13 +197,28 @@ public class Sale : BaseEntity, ISale
         if (!product.IsAvailableForSale())
             throw new InvalidOperationException("Product is not available for sale.");
 
-        // Check if adding this quantity would exceed the 20-unit limit for this product
+        // Business Rule: Check if adding this quantity would exceed the 20-unit limit for this product
         var existingQuantity = Items
             .Where(i => !i.IsCancelled && i.Product.Id == product.Id)
             .Sum(i => i.Quantity);
 
         if (existingQuantity + quantity > 20)
             throw new InvalidOperationException("Cannot sell more than 20 units of the same product in a single sale.");
+
+        // Business Rule: Check stock availability
+        if (product.StockQuantity < quantity)
+            throw new InvalidOperationException($"Product '{product.Name}' is not available in the requested quantity. Available: {product.StockQuantity}, Requested: {quantity}.");
+
+        // Business Rule: Check if adding this product would exceed the 20 different products limit
+        var existingProductIds = Items
+            .Where(i => !i.IsCancelled)
+            .Select(i => i.Product.Id)
+            .Distinct()
+            .Count();
+
+        var isNewProduct = !Items.Any(i => !i.IsCancelled && i.Product.Id == product.Id);
+        if (isNewProduct && existingProductIds >= 20)
+            throw new InvalidOperationException("Cannot add more than 20 different products to a single sale.");
 
         var saleItem = SaleItem.Create(Id, product, quantity, unitPrice);
         Items.Add(saleItem);
@@ -237,17 +252,28 @@ public class Sale : BaseEntity, ISale
     /// </summary>
     /// <param name="itemId">The ID of the item to update.</param>
     /// <param name="newQuantity">The new quantity for the item.</param>
+    /// <param name="product">The product to validate stock against (optional for stock validation).</param>
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled, item not found, or business rules violated.</exception>
-    public void UpdateItemQuantity(Guid itemId, int newQuantity)
+    public void UpdateItemQuantity(Guid itemId, int newQuantity, Product? product = null)
     {
         if (IsCancelled)
             throw new InvalidOperationException("Cannot update items in a cancelled sale.");
 
-        var item = Items.FirstOrDefault(i => i.Id == itemId);
+        var item = Items.FirstOrDefault(i => i.Id == itemId && !i.IsCancelled);
         if (item == null)
             throw new ArgumentException("Item not found in sale.", nameof(itemId));
 
-        // Check if updating this quantity would exceed the 20-unit limit for this product
+        // Business Rule: If increasing quantity, check stock availability
+        if (product != null)
+        {
+            var quantityDifference = newQuantity - item.Quantity;
+            if (quantityDifference > 0 && product.StockQuantity < quantityDifference)
+            {
+                throw new InvalidOperationException($"Product '{product.Name}' does not have sufficient stock for quantity increase. Available: {product.StockQuantity}, Required: {quantityDifference}.");
+            }
+        }
+
+        // Business Rule: Check if updating this quantity would exceed the 20-unit limit for this product
         var otherItemsQuantity = Items
             .Where(i => !i.IsCancelled && i.Product.Id == item.Product.Id && i.Id != itemId)
             .Sum(i => i.Quantity);

@@ -68,7 +68,7 @@ public class CustomerValidatorTests
 
         // Assert
         result.ShouldHaveValidationErrorFor(c => c.Name)
-            .WithErrorMessage("Customer name must be at least 2 characters long.");
+            .WithErrorMessage("Customer name must be at least 3 characters long.");
     }
 
     /// <summary>

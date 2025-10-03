@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -59,10 +60,10 @@ public class Sale : BaseEntity, ISale
     public decimal TotalAmount { get; set; }
 
     /// <summary>
-    /// Gets the cancellation status of the sale.
-    /// When cancelled, the entire sale is void and excluded from revenue calculations.
+    /// Gets the current status of the sale.
+    /// Used to track sale lifecycle from draft to confirmed or cancelled.
     /// </summary>
-    public bool IsCancelled { get; set; }
+    public SaleStatus Status { get; set; } = SaleStatus.Draft;
 
     /// <summary>
     /// Gets the date and time when the sale was created.
@@ -120,7 +121,7 @@ public class Sale : BaseEntity, ISale
     /// Gets the cancellation status of the sale.
     /// </summary>
     /// <returns>True if the sale is cancelled; otherwise, false.</returns>
-    bool ISale.IsCancelled => IsCancelled;
+    bool ISale.IsCancelled => Status == SaleStatus.Cancelled;
 
     /// <summary>
     /// Gets the date when the sale was created.
@@ -189,7 +190,7 @@ public class Sale : BaseEntity, ISale
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled or business rules are violated.</exception>
     public SaleItem AddItem(Product product, int quantity, decimal? unitPrice = null)
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
             throw new InvalidOperationException("Cannot add items to a cancelled sale.");
 
         if (product == null)
@@ -237,7 +238,7 @@ public class Sale : BaseEntity, ISale
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled or item not found.</exception>
     public void RemoveItem(Guid itemId)
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
             throw new InvalidOperationException("Cannot remove items from a cancelled sale.");
 
         var item = Items.FirstOrDefault(i => i.Id == itemId);
@@ -259,7 +260,7 @@ public class Sale : BaseEntity, ISale
     /// <exception cref="InvalidOperationException">Thrown when sale is cancelled, item not found, or business rules violated.</exception>
     public void UpdateItemQuantity(Guid itemId, int newQuantity, Product product)
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
             throw new InvalidOperationException("Cannot update items in a cancelled sale.");
 
         var item = Items.FirstOrDefault(i => i.Id == itemId && !i.IsCancelled);
@@ -292,10 +293,10 @@ public class Sale : BaseEntity, ISale
     /// </summary>
     public void Cancel()
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
             return;
 
-        IsCancelled = true;
+        Status = SaleStatus.Cancelled;
         TotalAmount = 0;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -306,11 +307,31 @@ public class Sale : BaseEntity, ISale
     /// </summary>
     public void Reactivate()
     {
-        if (!IsCancelled)
+        if (Status != SaleStatus.Cancelled)
+            throw new InvalidOperationException("Sale is not cancelled.");
+
+        Status = SaleStatus.Draft;
+        RecalculateTotal();
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Confirms the sale, marking it as final and processed.
+    /// Validates business rules before confirmation.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when sale cannot be confirmed due to validation errors.</exception>
+    public void Confirm()
+    {
+        if (Status == SaleStatus.Confirmed)
             return;
 
-        IsCancelled = false;
-        RecalculateTotal();
+        if (Status == SaleStatus.Cancelled)
+            throw new InvalidOperationException("Cannot confirm a cancelled sale.");
+
+        if (!HasItems())
+            throw new InvalidOperationException("Cannot confirm sale without items.");
+
+        Status = SaleStatus.Confirmed;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -320,7 +341,7 @@ public class Sale : BaseEntity, ISale
     /// <returns>The total discount amount across all items.</returns>
     public decimal GetTotalDiscount()
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
             return 0;
 
         return Items
@@ -334,7 +355,7 @@ public class Sale : BaseEntity, ISale
     /// <returns>The subtotal before discounts.</returns>
     public decimal GetSubtotal()
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
             return 0;
 
         return Items
@@ -365,7 +386,7 @@ public class Sale : BaseEntity, ISale
     /// </summary>
     private void RecalculateTotal()
     {
-        if (IsCancelled)
+        if (Status == SaleStatus.Cancelled)
         {
             TotalAmount = 0;
             return;

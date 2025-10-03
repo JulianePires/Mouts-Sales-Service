@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Validation;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using FluentAssertions;
 using FluentValidation.TestHelper;
@@ -171,7 +172,7 @@ public class SaleValidatorTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         sale.TotalAmount = -100m;
-        sale.IsCancelled = false;
+        sale.Status = SaleStatus.Draft;
 
         // Act
         var result = _validator.TestValidate(sale);
@@ -190,7 +191,7 @@ public class SaleValidatorTests
         // Arrange
         var sale = SaleTestData.GenerateValidSale();
         sale.TotalAmount = -100m;
-        sale.IsCancelled = true;
+        sale.Status = SaleStatus.Cancelled;
 
         // Act
         var result = _validator.TestValidate(sale);

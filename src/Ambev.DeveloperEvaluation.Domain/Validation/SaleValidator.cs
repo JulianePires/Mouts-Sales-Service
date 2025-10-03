@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Validation;
@@ -39,7 +40,7 @@ public class SaleValidator : AbstractValidator<Sale>
         RuleFor(sale => sale.TotalAmount)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Total amount cannot be negative.")
-            .When(sale => !sale.IsCancelled);
+            .When(sale => sale.Status != SaleStatus.Cancelled);
 
         RuleFor(sale => sale.CreatedAt)
             .LessThanOrEqualTo(DateTime.UtcNow.AddMilliseconds(BusinessConstants.DateValidationBufferMilliseconds))

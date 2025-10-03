@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
@@ -285,10 +286,10 @@ public class SaleRepositoryTests : IDisposable
         var result = await _repository.UpdateAsync(sale);
 
         // Assert
-        result.IsCancelled.Should().BeTrue();
+        result.Status.Should().Be(SaleStatus.Cancelled);
 
         var savedSale = await _repository.GetByIdAsync(sale.Id);
-        savedSale!.IsCancelled.Should().BeTrue();
+        savedSale!.Status.Should().Be(SaleStatus.Cancelled);
     }
 
     /// <summary>

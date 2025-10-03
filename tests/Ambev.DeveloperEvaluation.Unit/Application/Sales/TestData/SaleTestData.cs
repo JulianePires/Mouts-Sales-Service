@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 
@@ -81,8 +82,7 @@ public static class SaleTestData
     public static Sale GenerateCancelledSale()
     {
         var sale = GenerateValidSale();
-        sale.IsCancelled = true;
-        sale.UpdatedAt = DateTime.UtcNow;
+        sale.Cancel();
 
         foreach (var item in sale.Items)
         {

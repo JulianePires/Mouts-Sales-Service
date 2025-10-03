@@ -96,7 +96,7 @@ public class CreateCustomerHandlerTests
         {
             Name = "John Doe",
             Email = "existing@example.com",
-            Phone = "(11) 99999-9999", 
+            Phone = "(11) 99999-9999",
             Address = "123 Main Street",
             BirthDate = new DateTime(1990, 1, 1)
         };

@@ -64,6 +64,12 @@ public class SaleValidator : AbstractValidator<Sale>
             .WithMessage("Cannot sell more than 20 units of the same product in a single sale.")
             .When(sale => sale.Items != null && sale.Items.Any());
 
+        // Business rule: maximum 20 different products per sale
+        RuleFor(sale => sale.Items)
+            .Must(ValidateMaxDifferentProducts)
+            .WithMessage("Cannot sell more than 20 different products in a single sale.")
+            .When(sale => sale.Items != null && sale.Items.Any());
+
         // Validate individual sale items
         RuleForEach(sale => sale.Items)
             .SetValidator(new SaleItemValidator())
@@ -85,5 +91,21 @@ public class SaleValidator : AbstractValidator<Sale>
             .ToList();
 
         return productQuantities.All(quantity => quantity <= 20);
+    }
+
+    /// <summary>
+    /// Validates that the sale doesn't exceed the maximum of 20 different products.
+    /// </summary>
+    private static bool ValidateMaxDifferentProducts(List<SaleItem> items)
+    {
+        if (items == null || !items.Any())
+            return true;
+
+        var distinctProducts = items
+            .Where(i => !i.IsCancelled)
+            .GroupBy(i => i.Product?.Id)
+            .Count();
+
+        return distinctProducts <= 20;
     }
 }

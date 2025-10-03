@@ -30,8 +30,8 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
         RuleFor(x => x.Items)
             .NotEmpty()
             .WithMessage("Sale must contain at least one item.")
-            .Must(items => items == null || items.Count <= 50)
-            .WithMessage("Sale cannot contain more than 50 different items.");
+            .Must(items => items == null || items.Count <= 20)
+            .WithMessage("Sale cannot contain more than 20 different items (business rule).");
 
         RuleForEach(x => x.Items)
             .ChildRules(item =>

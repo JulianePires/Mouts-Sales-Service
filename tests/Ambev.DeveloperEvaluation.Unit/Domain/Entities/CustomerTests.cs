@@ -50,7 +50,7 @@ public class CustomerTests
         var email = "john.doe@email.com";
 
         // Act & Assert
-        var action = () => Customer.Create(name, email);
+        var action = () => Customer.Create(name, email, "11122233344");
         action.Should().Throw<ArgumentException>()
             .WithMessage("Customer name cannot be null or empty.*");
     }
@@ -66,7 +66,7 @@ public class CustomerTests
         var email = "invalid-email";
 
         // Act & Assert
-        var action = () => Customer.Create(name, email);
+        var action = () => Customer.Create(name, email, "11122233344");
         action.Should().Throw<ArgumentException>()
             .WithMessage("Invalid email format.*");
     }

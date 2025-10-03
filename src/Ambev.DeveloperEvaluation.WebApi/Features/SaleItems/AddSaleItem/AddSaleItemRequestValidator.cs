@@ -19,7 +19,7 @@ public class AddSaleItemRequestValidator : AbstractValidator<AddSaleItemRequest>
         RuleFor(x => x.Quantity)
             .GreaterThan(0)
             .WithMessage("Quantity must be greater than zero")
-            .LessThan(20)
+            .LessThanOrEqualTo(20)
             .WithMessage("Maximum quantity per item is 20 units");
 
         RuleFor(x => x.UnitPrice)

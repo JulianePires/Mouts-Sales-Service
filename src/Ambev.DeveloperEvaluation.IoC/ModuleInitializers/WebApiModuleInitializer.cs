@@ -1,8 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Security;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 namespace Ambev.DeveloperEvaluation.IoC.ModuleInitializers
@@ -11,7 +13,6 @@ namespace Ambev.DeveloperEvaluation.IoC.ModuleInitializers
     {
         public void Initialize(WebApplicationBuilder builder)
         {
-
             builder.Services.AddControllers();
             builder.Services.AddHealthChecks();
         }

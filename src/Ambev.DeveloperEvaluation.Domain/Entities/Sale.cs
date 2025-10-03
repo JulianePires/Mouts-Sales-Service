@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
+using Ambev.DeveloperEvaluation.Domain.Events;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -11,7 +12,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 /// This entity follows domain-driven design principles and includes comprehensive business rules validation.
 /// Manages the complete sale lifecycle including item management, discount calculation, and cancellation.
 /// </summary>
-public class Sale : BaseEntity, ISale
+public class Sale : AggregateRoot, ISale
 {
     /// <summary>
     /// Gets the sale number for identification and tracking purposes.
@@ -170,13 +171,18 @@ public class Sale : BaseEntity, ISale
         if (!branch.IsActive)
             throw new InvalidOperationException("Cannot create sale for inactive branch.");
 
-        return new Sale
+        var sale = new Sale
         {
             Customer = customer,
             Branch = branch,
             SaleNumber = saleNumber,
             SaleDate = saleDate ?? DateTime.UtcNow
         };
+
+        // Raise domain event for sale creation
+        sale.AddDomainEvent(new SaleCreated(sale));
+
+        return sale;
     }
 
     /// <summary>
@@ -227,6 +233,10 @@ public class Sale : BaseEntity, ISale
         Items.Add(saleItem);
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
+
+        // Raise domain event for sale modification (item added)
+        AddDomainEvent(new SaleModified(this, $"Added item {product.Name} (qty: {quantity})"));
+
         return saleItem;
     }
 
@@ -248,6 +258,9 @@ public class Sale : BaseEntity, ISale
         item.Cancel();
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
+
+        // Raise domain event for item cancellation
+        AddDomainEvent(new ItemCancelled(item, SaleNumber, "Item removed from sale"));
     }
 
     /// <summary>
@@ -285,6 +298,9 @@ public class Sale : BaseEntity, ISale
         item.UpdateQuantity(newQuantity);
         RecalculateTotal();
         UpdatedAt = DateTime.UtcNow;
+
+        // Raise domain event for sale modification
+        AddDomainEvent(new SaleModified(this, $"Updated item {item.Product.Name} quantity to {newQuantity}"));
     }
 
     /// <summary>
@@ -296,9 +312,15 @@ public class Sale : BaseEntity, ISale
         if (Status == SaleStatus.Cancelled)
             return;
 
+        var originalAmount = TotalAmount;
+        var originalItemCount = GetActiveItemCount();
+
         Status = SaleStatus.Cancelled;
         TotalAmount = 0;
         UpdatedAt = DateTime.UtcNow;
+
+        // Raise domain event for sale cancellation
+        AddDomainEvent(new SaleCancelled(this, originalAmount, originalItemCount, "Manual cancellation"));
     }
 
     /// <summary>

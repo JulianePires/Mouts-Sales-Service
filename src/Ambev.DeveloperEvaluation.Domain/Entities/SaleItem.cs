@@ -134,7 +134,7 @@ public class SaleItem : BaseEntity, ISaleItem
         // Parameter validation (domain responsibility)
         if (saleId == Guid.Empty)
             throw new ArgumentException("Sale ID cannot be empty.", nameof(saleId));
-        
+
         if (product == null)
             throw new ArgumentException("Product cannot be null.", nameof(product));
 
